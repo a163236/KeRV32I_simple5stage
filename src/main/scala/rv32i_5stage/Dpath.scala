@@ -70,9 +70,6 @@ class Dpath(implicit val conf:Configurations) extends Module{
   regFile.io.waddr := wb_stage.io.registerFileIO.waddr
   regFile.io.wdata := wb_stage.io.registerFileIO.wdata
 
-  io.led.out := regFile.io.reg_a0
-
-
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
 
