@@ -1,0 +1,6 @@
+*.json
+*.fir
+*.v
+/target
+*/target
+/test_run_dir
