@@ -42,7 +42,7 @@ class IDEX_REGS extends Module{
   ctrl_execute_regs.op1_sel := io.in.ctrlEX.op1_sel
   ctrl_execute_regs.op2_sel := io.in.ctrlEX.op2_sel
   ctrl_execute_regs.imm_sel := io.in.ctrlEX.imm_sel
-  ctrl_execute_regs.imm_sel := io.in.ctrlEX.alu_fun
+  ctrl_execute_regs.alu_fun := io.in.ctrlEX.alu_fun
   ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
   ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
   ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
@@ -61,7 +61,6 @@ class IDEX_REGS extends Module{
   io.out.ctrlMEM.dmem_wr := ctrl_mem_regs.dmem_wr
   io.out.ctrlMEM.dmem_mask := ctrl_mem_regs.dmem_mask
   io.out.ctrlWB.rf_wen := ctrl_wb_regs.rf_wen
-
 
   //printf("%x ", io.in.pc)
   //printf("%x \n", io.out.pc)

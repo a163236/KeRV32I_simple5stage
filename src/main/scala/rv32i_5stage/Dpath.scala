@@ -40,7 +40,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
   ifid_regs.io.in := if_stage.io.out
   id_stage.io.in := ifid_regs.io.out
   idex_regs.io.in := id_stage.io.out
-  exe_stage.io.in := id_stage.io.out
+  exe_stage.io.in := idex_regs.io.out
   exmem_regs.io.in := exe_stage.io.out
   mem_stage.io.in := exmem_regs.io.out
   memwb_regs.io.in := mem_stage.io.out

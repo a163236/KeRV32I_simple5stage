@@ -39,4 +39,6 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   io.out.inst := io.in.inst
   io.out.ctrlMEM <> io.in.ctrlMEM
   io.out.ctrlWB <> io.in.ctrlWB
+
+
 }
