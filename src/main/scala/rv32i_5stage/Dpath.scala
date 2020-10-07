@@ -46,6 +46,12 @@ class Dpath(implicit val conf:Configurations) extends Module{
   memwb_regs.io.in := mem_stage.io.out
   wb_stage.io.in := memwb_regs.io.out
 
+  // ジャンプ命令 exeステージ-> IFステージへの信号
+  if_stage.io.exetoifjumpsignals := exe_stage.io.exetoifjumpsignals
+  // ジャンプ命令に付随するフラッシュ
+  ifid_regs.io.pipe_flush := exe_stage.io.pipe_flush
+  idex_regs.io.pipe_flush := exe_stage.io.pipe_flush
+
   // 命令メモリ接続
   io.imem <> if_stage.io.imem
   //io.imem <> ifid_regs.io.imem
@@ -72,6 +78,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
   io.debug.pc := ifid_regs.io.out.pc
 
+  // debugの信号線を増やさないとなぜか正しく表示されない。。。
   printf("pc_IFID=[%x] inst_IFID=[%x] || " +
     "pc_IDEX=[%x] rs1_IDEX=[%x] rs2_IDEX=[%x] inst_IDEX=[%x]  || " +
     "pc_mem=[%x] alu_out=[%x] rs2_mem=[%x] inst_mem=[%x]  || " +

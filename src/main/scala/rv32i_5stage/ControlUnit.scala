@@ -7,6 +7,7 @@ import common.Instructions._
 import CommonPackage._
 
 class CtrlEX extends Bundle{  // 実行ステージの制御信号
+  val br_type = Output(UInt(BR_N.getWidth.W))
   val op1_sel = Output(UInt(OP1_X.getWidth.W))
   val op2_sel = Output(UInt(OP2_X.getWidth.W))
   val imm_sel = Output(UInt(IMM_X.getWidth.W))
@@ -109,16 +110,19 @@ class ControlUnit extends Module{
   // 上のリストで選ばれたものを変数にぶち込む
   val (cs_val_inst: Bool) :: cs_br_type         :: cs_op1_sel            :: cs_op2_sel            :: cs0 = csignals
   val cs_imm_sel          :: cs_alu_fun         :: cs_wb_sel             :: (cs_rf_wen: Bool)     :: cs1 = cs0
-  val (cs_mem_en: Bool)   :: cs_mem_fcn         :: cs_msk_sel            :: cs_csr_cmd            :: (cs_fencei: Bool) :: Nil = cs1
+  val (cs_mem_en: Bool)   :: cs_mem_wr         :: cs_mem_mask           :: cs_csr_cmd            :: (cs_fencei: Bool) :: Nil = cs1
 
   // 実行ステージ
+  io.ctrlEX.br_type := cs_br_type
   io.ctrlEX.alu_fun := cs_alu_fun
   io.ctrlEX.imm_sel := cs_imm_sel
   io.ctrlEX.op1_sel := cs_op1_sel
   io.ctrlEX.op2_sel := cs_op2_sel
 
   // メモリステージ
-
+  io.ctrlMEM.dmem_en := cs_mem_en
+  io.ctrlMEM.dmem_wr := cs_mem_wr
+  io.ctrlMEM.dmem_mask := cs_mem_mask
 
   // ライトバック
   io.ctrlWB.rf_wen := cs_rf_wen

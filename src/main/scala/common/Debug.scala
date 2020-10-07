@@ -15,9 +15,10 @@ class DebugIO(implicit val conf: Configurations) extends Bundle{
   val rs1_execute = Output(UInt(conf.xlen.W))
   val rs2_execute = Output(UInt(conf.xlen.W))
   val inst_execute = Output(UInt(conf.xlen.W))
-
   val alu_out=Output(UInt(conf.xlen.W))
 
+  val tmp = Output(UInt(conf.xlen.W))
+  val tmp2 = Output(UInt(conf.xlen.W))
 }
 
 class LEDDebugIO extends Bundle{

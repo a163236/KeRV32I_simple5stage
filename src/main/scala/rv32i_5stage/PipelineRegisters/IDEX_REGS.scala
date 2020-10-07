@@ -20,6 +20,7 @@ class IDEX_REGS_Output extends Bundle{
 class IDEX_REGS_IO extends Bundle {
   val in = Flipped(new IDEX_REGS_Output)
   val out = new IDEX_REGS_Output
+  val pipe_flush = Input(Bool())
 }
 
 class IDEX_REGS extends Module{
@@ -35,25 +36,46 @@ class IDEX_REGS extends Module{
   val ctrl_wb_regs = new WB_Ctrl_Regs
 
   // 入力
-  pc := io.in.pc
-  rs1 := io.in.rs1
-  rs2 := io.in.rs2
-  inst := io.in.inst
-  ctrl_execute_regs.op1_sel := io.in.ctrlEX.op1_sel
-  ctrl_execute_regs.op2_sel := io.in.ctrlEX.op2_sel
-  ctrl_execute_regs.imm_sel := io.in.ctrlEX.imm_sel
-  ctrl_execute_regs.alu_fun := io.in.ctrlEX.alu_fun
-  ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
-  ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
-  ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
-  ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
-  ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
+  when(io.pipe_flush){
+    pc := 0.U
+    rs1 := io.in.rs1
+    rs2 := io.in.rs2
+    inst := BUBBLE
+    ctrl_execute_regs.br_type := PC_4
+    ctrl_execute_regs.op1_sel := OP1_X
+    ctrl_execute_regs.op2_sel := OP2_X
+    ctrl_execute_regs.imm_sel := IMM_X
+    ctrl_execute_regs.alu_fun := ALU_X
+    ctrl_mem_regs.dmem_en := MEN_1
+    ctrl_mem_regs.dmem_wr := M_X
+    ctrl_mem_regs.dmem_mask := MT_X
+    ctrl_wb_regs.wb_sel := WB_X
+    ctrl_wb_regs.rf_wen := WB_X
+
+  }.otherwise{
+    pc := io.in.pc
+    rs1 := io.in.rs1
+    rs2 := io.in.rs2
+    inst := io.in.inst
+    ctrl_execute_regs.br_type := io.in.ctrlEX.br_type
+    ctrl_execute_regs.op1_sel := io.in.ctrlEX.op1_sel
+    ctrl_execute_regs.op2_sel := io.in.ctrlEX.op2_sel
+    ctrl_execute_regs.imm_sel := io.in.ctrlEX.imm_sel
+    ctrl_execute_regs.alu_fun := io.in.ctrlEX.alu_fun
+    ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
+    ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
+    ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
+    ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
+    ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
+  }
 
   // 出力
   io.out.pc := pc
   io.out.rs1 := rs1
   io.out.rs2 := rs2
   io.out.inst := inst
+
+  io.out.ctrlEX.br_type := ctrl_execute_regs.br_type
   io.out.ctrlEX.op1_sel := ctrl_execute_regs.op1_sel
   io.out.ctrlEX.op2_sel := ctrl_execute_regs.op2_sel
   io.out.ctrlEX.imm_sel := ctrl_execute_regs.imm_sel
@@ -68,6 +90,7 @@ class IDEX_REGS extends Module{
 
 // レジスタ宣言
 class EX_Ctrl_Regs{
+  val br_type = Reg(UInt(BR_N.getWidth.W))
   val op1_sel = Reg(UInt(OP1_X.getWidth.W))
   val op2_sel = Reg(UInt(OP2_X.getWidth.W))
   val imm_sel = Reg(UInt(IMM_X.getWidth.W))

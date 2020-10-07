@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineStages
 
 import chisel3._
+import chisel3.util._
 import common.CommonPackage._
 import rv32i_5stage._
 import rv32i_5stage.PipelineRegisters._
@@ -12,6 +13,8 @@ class IF_STAGE_IO extends Bundle{
   val in = new IF_STAGE_Input
   val out = new IFID_REGS_Output
   val imem = new InstMemPortIO
+  val exetoifjumpsignals = Flipped(new EXEtoIFjumpsignalsIO)
+
 }
 
 class IF_STAGE extends Module{
@@ -23,7 +26,13 @@ class IF_STAGE extends Module{
 
   // 動作
   io.imem.req.renI := true.B
-  next_pc := pc_reg + 4.U
+
+  when(io.exetoifjumpsignals.branchbool === true.B){
+    next_pc := io.exetoifjumpsignals.aluout
+  }.otherwise{
+    next_pc := pc_reg + 4.U
+  }
+
   when(reset.asBool()===true.B){
     io.imem.req.raddrI := 0.U
   }.otherwise{
