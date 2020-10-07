@@ -26,13 +26,10 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
         /*
         println(
           c.io.debug.pc.peek()
-          ,c.io.debug.pc_decode.peek()
-          ,c.io.debug.inst.peek()
-          ,c.io.debug.alu_out.peek()
-          ,c.io.debug.reg_a0.peek()
         )
 
          */
+
         c.clock.step(1)
       }
 

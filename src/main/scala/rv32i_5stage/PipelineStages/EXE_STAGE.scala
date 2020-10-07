@@ -14,6 +14,7 @@ class EXE_STAGE_IO extends Bundle{
 class EXE_STAGE(implicit val conf: Configurations) extends Module{
   val io = IO(new EXE_STAGE_IO)
 
+  io.out.rs2 := io.in.rs2
   io := DontCare
   val ALU = Module(new ALU())
   val BranchComp = Module(new BranchComp())

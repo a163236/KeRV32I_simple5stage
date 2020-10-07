@@ -17,4 +17,6 @@ class MEM_STAGE extends Module{
   // 出力
   io.out.rf_wdata := io.in.alu
   io.out.inst := io.in.inst
+  io.out.ctrlWB <> io.in.ctrlWB
+
 }

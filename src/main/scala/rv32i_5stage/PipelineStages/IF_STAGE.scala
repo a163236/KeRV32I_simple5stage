@@ -6,7 +6,6 @@ import rv32i_5stage._
 import rv32i_5stage.PipelineRegisters._
 
 class IF_STAGE_Input extends Bundle{
-
 }
 
 class IF_STAGE_IO extends Bundle{
@@ -25,11 +24,21 @@ class IF_STAGE extends Module{
   // 動作
   io.imem.req.renI := true.B
   next_pc := pc_reg + 4.U
-  io.imem.req.raddrI := next_pc
+  when(reset.asBool()===true.B){
+    io.imem.req.raddrI := 0.U
+  }.otherwise{
+    io.imem.req.raddrI := next_pc
+  }
   pc_reg := next_pc
 
   // 出力
   io.out.pc := pc_reg
   io.out.inst := io.imem.resp.rdata
 
+  /*
+  printf("%x ", io.out.pc)
+  printf("%x ", io.imem.resp.rdata)
+  printf("\n")
+
+   */
 }

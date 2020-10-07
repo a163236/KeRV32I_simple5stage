@@ -48,6 +48,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
   // 命令メモリ接続
   io.imem <> if_stage.io.imem
+  //io.imem <> ifid_regs.io.imem
 
   // レジスタファイル接続
   id_stage.io.registerFileIO := DontCare
@@ -64,21 +65,23 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
 
-  printf("pc_reg=[%x], " +
-    "pc_decode=[%x], inst=[%x] " +
-    "pc_execute=[%x], rs1_execute=[%x] rs2_execute=[%x] inst_execute=[%x] " +
-    "pc_mem=[%x], alu_out=[%x], rs2_mem=[%x], inst_mem=[%x] " +
-    "memStage_out=[%x], inst_wb=[%x] " +
-    "reg_a0=[%x] " +
+  io.debug.pc := ifid_regs.io.out.pc
 
-    "\n"
+  printf("pc_IFID=[%x] inst_IFID=[%x] || " +
+    "pc_IDEX=[%x] rs1_IDEX=[%x] rs2_IDEX=[%x] inst_IDEX=[%x]  || " +
+    "pc_mem=[%x] alu_out=[%x] rs2_mem=[%x] inst_mem=[%x]  || " +
+    "memStage_out=[%x] inst_wb=[%x]  || " +
+    "refwen=[%x] regwaddr=[%x] regwdata=[%x] reg_a0=[%x] " +
+    " || "
 
-    , if_stage.io.out.pc
     , ifid_regs.io.out.pc, ifid_regs.io.out.inst
     , idex_regs.io.out.pc, idex_regs.io.out.rs1, idex_regs.io.out.rs2, idex_regs.io.out.inst
     , exmem_regs.io.out.pc, exmem_regs.io.out.alu, exmem_regs.io.out.rs2, exmem_regs.io.out.inst
     , memwb_regs.io.out.rf_wdata, memwb_regs.io.out.inst
-    , regFile.io.reg_a0
+    , regFile.io.wen, regFile.io.waddr, regFile.io.wdata, regFile.io.reg_a0
+    ,
   )
+
+  printf("\n")
 
 }

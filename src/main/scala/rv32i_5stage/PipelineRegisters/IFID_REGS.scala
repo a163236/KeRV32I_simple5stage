@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineRegisters
 
 import chisel3._
+import rv32i_5stage._
 
 class IFID_REGS_Output extends Bundle{
   val pc = Output(UInt(32.W))
