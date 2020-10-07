@@ -50,11 +50,16 @@ class Dpath(implicit val conf:Configurations) extends Module{
   io.imem <> if_stage.io.imem
   //io.imem <> ifid_regs.io.imem
 
+  // データメモリ接続
+  io.dmem <> mem_stage.io.dmem
+
   // レジスタファイル接続
   id_stage.io.registerFileIO := DontCare
   wb_stage.io.registerFileIO := DontCare
   regFile.io.rs1_addr := id_stage.io.registerFileIO.rs1_addr
   regFile.io.rs2_addr := id_stage.io.registerFileIO.rs2_addr
+  id_stage.io.registerFileIO.rs1_data := regFile.io.rs1_data
+  id_stage.io.registerFileIO.rs2_data := regFile.io.rs2_data
   regFile.io.wen := wb_stage.io.registerFileIO.wen
   regFile.io.waddr := wb_stage.io.registerFileIO.waddr
   regFile.io.wdata := wb_stage.io.registerFileIO.wdata
@@ -77,7 +82,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
     , ifid_regs.io.out.pc, ifid_regs.io.out.inst
     , idex_regs.io.out.pc, idex_regs.io.out.rs1, idex_regs.io.out.rs2, idex_regs.io.out.inst
     , exmem_regs.io.out.pc, exmem_regs.io.out.alu, exmem_regs.io.out.rs2, exmem_regs.io.out.inst
-    , memwb_regs.io.out.rf_wdata, memwb_regs.io.out.inst
+    , memwb_regs.io.out.alu, memwb_regs.io.out.inst
     , regFile.io.wen, regFile.io.waddr, regFile.io.wdata, regFile.io.reg_a0
     ,
   )

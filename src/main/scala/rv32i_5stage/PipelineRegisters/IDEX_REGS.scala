@@ -46,6 +46,7 @@ class IDEX_REGS extends Module{
   ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
   ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
   ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
+  ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
   ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
 
   // 出力
@@ -60,10 +61,8 @@ class IDEX_REGS extends Module{
   io.out.ctrlMEM.dmem_en := ctrl_mem_regs.dmem_en
   io.out.ctrlMEM.dmem_wr := ctrl_mem_regs.dmem_wr
   io.out.ctrlMEM.dmem_mask := ctrl_mem_regs.dmem_mask
+  io.out.ctrlWB.wb_sel := ctrl_wb_regs.wb_sel
   io.out.ctrlWB.rf_wen := ctrl_wb_regs.rf_wen
-
-  //printf("%x ", io.in.pc)
-  //printf("%x \n", io.out.pc)
 
 }
 

@@ -22,7 +22,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
   "Tile" should "" in{
     test(new Tile()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
-      for(i <- 0 to 10){
+      for(i <- 0 to 20){
         /*
         println(
           c.io.debug.pc.peek()
@@ -41,22 +41,22 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
     test(new SyncMemScala()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
 
-      c.io.datamport.req.fcn.poke(M_XRD)
-      c.io.datamport.req.typ.poke(MT_W)
+      c.io.datamport.req.mask.poke(M_XRD)
+      c.io.datamport.req.wr.poke(MT_W)
       c.io.datamport.req.addrD.poke(0.U)
       println(c.io.datamport.resp.rdata.peek())
       c.clock.step(1)
       println(c.io.datamport.resp.rdata.peek())
 
-      c.io.datamport.req.fcn.poke(M_XWR)
-      c.io.datamport.req.typ.poke(MT_H)
+      c.io.datamport.req.mask.poke(M_XWR)
+      c.io.datamport.req.wr.poke(MT_H)
       c.io.datamport.req.addrD.poke(1.U)
       c.io.datamport.req.wdataD.poke(0.U)
       c.clock.step(1)
       //println(c.io.datamport.resp.rdata.peek())
 
-      c.io.datamport.req.fcn.poke(M_XRD)
-      c.io.datamport.req.typ.poke(MT_W)
+      c.io.datamport.req.mask.poke(M_XRD)
+      c.io.datamport.req.wr.poke(MT_W)
       c.io.datamport.req.addrD.poke(0.U)
       c.clock.step(1)
       println(c.io.datamport.resp.rdata.peek())

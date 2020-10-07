@@ -30,7 +30,6 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   ALU.io.op1 := Mux(io.in.ctrlEX.op1_sel===OP1_RS1, io.in.rs1, io.in.pc)
   ALU.io.op2 := Mux(io.in.ctrlEX.op2_sel===OP2_RS2, io.in.rs2, ImmGen.io.out)
   ALU.io.fun := io.in.ctrlEX.alu_fun
-
   // 出力
   // branchの出力はまだ
   io.out.pc := io.in.pc

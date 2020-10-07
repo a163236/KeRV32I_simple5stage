@@ -20,6 +20,7 @@ class CtrlMEM extends Bundle{ // メモリステージの制御信号
 }
 
 class CtrlWB extends Bundle{  // ライトバックステージの制御信号
+  val wb_sel = Output(UInt(WB_X.getWidth.W))
   val rf_wen  = Output(Bool())
 }
 

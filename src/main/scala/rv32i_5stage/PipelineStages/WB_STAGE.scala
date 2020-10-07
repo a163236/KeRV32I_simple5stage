@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineStages
 
 import chisel3._
+import chisel3.util._
 import common._
 import common.CommonPackage._
 import rv32i_5stage.PipelineRegisters._
@@ -19,5 +20,9 @@ class WB_STAGE extends Module{
   // 出力
   io.registerFileIO.wen := io.in.ctrlWB.rf_wen
   io.registerFileIO.waddr := io.in.inst(RD_MSB, RD_LSB)
-  io.registerFileIO.wdata := io.in.rf_wdata
+  io.registerFileIO.wdata := MuxLookup(io.in.ctrlWB.wb_sel, io.in.alu, Array(
+    WB_PC4 -> io.in.pc_plus4,
+    WB_ALU -> io.in.alu,
+    WB_MEM -> io.in.rdataD
+  ))
 }
