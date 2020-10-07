@@ -21,14 +21,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
   // https://inst.eecs.berkeley.edu/~cs61c/resources/su18_lec/Lecture13.pdf
   // まずは使うModule宣言
-
-  val aLU     = Module(new ALU())
-  val immGen  = Module(new ImmGen())
   val regFile = Module(new RegisterFile())
-  val branchComp = Module(new BranchComp())
-  // 初期化
-  aLU.io:=DontCare; immGen.io:=DontCare;
-  regFile.io:=DontCare; branchComp.io:=DontCare
 
   //==============================================
 
@@ -57,20 +50,19 @@ class Dpath(implicit val conf:Configurations) extends Module{
   io.imem <> if_stage.io.imem
 
   // レジスタファイル接続
-  id_stage.io := DontCare
+  id_stage.io.registerFileIO := DontCare
+  wb_stage.io.registerFileIO := DontCare
   regFile.io.rs1_addr := id_stage.io.registerFileIO.rs1_addr
   regFile.io.rs2_addr := id_stage.io.registerFileIO.rs2_addr
+  regFile.io.wen := wb_stage.io.registerFileIO.wen
+  regFile.io.waddr := wb_stage.io.registerFileIO.waddr
+  regFile.io.wdata := wb_stage.io.registerFileIO.wdata
 
   io.led.out := regFile.io.reg_a0
 
-  /*
+
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
-  io.debug.pc := pc_reg
-  io.debug.pc_decode := pc_decode
-  io.debug.reg_a0 := regFile.io.reg_a0
-  io.debug.inst := inst
-  io.debug.alu_out := aLU.io.out
 
   printf("pc_reg=[%x], " +
     "pc_decode=[%x], inst=[%x] " +
@@ -78,18 +70,15 @@ class Dpath(implicit val conf:Configurations) extends Module{
     "pc_mem=[%x], alu_out=[%x], rs2_mem=[%x], inst_mem=[%x] " +
     "memStage_out=[%x], inst_wb=[%x] " +
     "reg_a0=[%x] " +
-    "temp=[%x] " +
+
     "\n"
 
-    , pc_reg
-    , pc_decode, inst
-    , pc_execute, rs1_execute, rs2_execute, inst_execute
-    , pc_mem, alu_out_mem, rs2_mem, inst_mem
-    , memStage_out, inst_wb
+    , if_stage.io.out.pc
+    , ifid_regs.io.out.pc, ifid_regs.io.out.inst
+    , idex_regs.io.out.pc, idex_regs.io.out.rs1, idex_regs.io.out.rs2, idex_regs.io.out.inst
+    , exmem_regs.io.out.pc, exmem_regs.io.out.alu, exmem_regs.io.out.rs2, exmem_regs.io.out.inst
+    , memwb_regs.io.out.rf_wdata, memwb_regs.io.out.inst
     , regFile.io.reg_a0
-    , ctrlUnit.io.ctrlWB.rf_wen
   )
-
-   */
 
 }

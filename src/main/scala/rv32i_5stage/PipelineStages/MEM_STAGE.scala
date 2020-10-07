@@ -13,4 +13,8 @@ class MEM_STAGE extends Module{
   val io = IO(new MEM_STAGE_IO)
 
   io := DontCare
+
+  // 出力
+  io.out.rf_wdata := io.in.alu
+  io.out.inst := io.in.inst
 }
