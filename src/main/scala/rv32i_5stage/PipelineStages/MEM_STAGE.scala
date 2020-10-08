@@ -22,7 +22,7 @@ class MEM_STAGE_IO extends Bundle{
   val out = new MEMWB_REGS_Output
   val dmem = new DataMemPortIO
   val memtoifjumpsignals = new MEMtoIFjumpsignalsIO
-  val bybassfromMem = Output(UInt(32.W))
+  val fwfromMEM = Flipped(new FWMEM_IO)
 }
 
 class MEM_STAGE extends Module{
@@ -50,8 +50,11 @@ class MEM_STAGE extends Module{
   io.out.wdataCSR := csrFile.io.wdata
   io.out.inst := io.in.inst
   io.out.ctrlWB := io.in.ctrlWB
-  // バイパス
-  io.bybassfromMem := io.in.alu
+
+  // フォワーディング
+  io.fwfromMEM.bypass_data := io.in.alu
+  io.fwfromMEM.rd_addr := io.in.inst(RD_MSB, RD_LSB)
+
 
   // 例外のIFへの出力
   io.memtoifjumpsignals.outPC := csrFile.io.outPC

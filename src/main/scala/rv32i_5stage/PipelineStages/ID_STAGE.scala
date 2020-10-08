@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineStages
 
 import chisel3._
+import chisel3.util._
 import common._
 import common.CommonPackage._
 import rv32i_5stage._

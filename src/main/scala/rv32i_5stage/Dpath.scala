@@ -23,6 +23,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // まずは使うModule宣言
   val regFile = Module(new RegisterFile())
   //val csrFile = Module(new CSRFile())
+  val forwardingUnit = Module(new ForwardingUnit())
 
   //==============================================
 
@@ -76,6 +77,11 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
   // CSRの接続
 
+  // フォワーディング
+  forwardingUnit.io.fwfromWB <> wb_stage.io.fwfromWB
+  forwardingUnit.io.fwfromMEM <> mem_stage.io.fwfromMEM
+  forwardingUnit.io.fwEXE <> exe_stage.io.fwUnit
+
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
 
@@ -85,7 +91,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
   printf("pc_IFID=[%x] inst_IFID=[%x] || " +
     "pc_IDEX=[%x] rs1_IDEX=[%x] rs2_IDEX=[%x] inst_IDEX=[%x]  || " +
     "pc_mem=[%x] alu_out=[%x] rs2_mem=[%x] inst_mem=[%x]  || " +
-    "memStage_out=[%x] inst_wb=[%x]  || " +
+    "memStage_out=[%x] inst_MEMWB_wb=[%x]  || " +
     "refwen=[%x] regwaddr=[%x] regwdata=[%x] reg_a0=[%x] " +
     " || "
 

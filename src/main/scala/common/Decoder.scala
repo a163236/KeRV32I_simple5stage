@@ -89,9 +89,9 @@ class Decoder extends Module{
         BLTU  -> List(Y, BR_LTU, OP1_PC, OP2_IMM, IMM_B, ALU_ADD, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.N, N),
 
         // CSR
-        CSRRWI -> List(Y, BR_N, OP1_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.W, N),
-        CSRRSI -> List(Y, BR_N, OP1_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.S, N),
-        CSRRCI -> List(Y, BR_N, OP1_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.C, N),
+        CSRRWI -> List(Y, BR_N, OP2_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.W, N),
+        CSRRSI -> List(Y, BR_N, OP2_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.S, N),
+        CSRRCI -> List(Y, BR_N, OP2_IMZ, OP2_X, IMM_Z, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.C, N),
         CSRRW  -> List(Y, BR_N, OP1_RS1, OP2_X, IMM_X, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.W, N),
         CSRRS  -> List(Y, BR_N, OP1_RS1, OP2_X, IMM_X, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.S, N),
         CSRRC  -> List(Y, BR_N, OP1_RS1, OP2_X, IMM_X, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.C, N),

@@ -70,8 +70,21 @@ trait ScalarOpConstants{
   // RS2 Operand Select
   val OP2_RS2 = 0.asUInt(2.W) // Register Source #2
   val OP2_IMM = 1.asUInt(2.W) // 即値
-  val OP1_IMZ = 2.asUInt(2.W) // Zero-extended rs1 field of inst, for CSRI instructions
+  val OP2_IMZ = 2.asUInt(2.W) // Zero-extended rs1 field of inst, for CSRI instructions  op1??
   val OP2_X   = 0.asUInt(2.W)
+
+  // FW1 select
+  val FW1_RS1 = 0.asUInt(2.W)
+  val FW1_MEM = 1.asUInt(2.W)  // メモリからのフォワーディング
+  val FW1_WB = 2.asUInt(2.W) // ライトバックからのフォワーディング
+  val FW1_X = 0.asUInt(2.W)
+
+  // FW2 select
+  val FW2_RS2 = 0.asUInt(2.W)
+  val FW2_MEM = 1.asUInt(2.W)
+  val FW2_WB = 2.asUInt(2.W)
+  val FW2_X = 0.asUInt(2.W)
+
 
   // Register File Write Enable Signal レジスタファイル書き込み有効信号
   val REN_0   = false.B
