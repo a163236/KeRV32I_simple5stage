@@ -28,8 +28,8 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   val ImmGen = Module(new ImmGen())
 
   // 入力
-  BranchComp.io.rs1_data := io.in.inst(RS1_MSB, RS1_LSB)
-  BranchComp.io.rs2_data := io.in.inst(RS2_MSB, RS2_LSB)
+  BranchComp.io.rs1_data := io.in.rs1
+  BranchComp.io.rs2_data := io.in.rs2
   ImmGen.io.inst := io.in.inst
   ImmGen.io.imm_sel := io.in.ctrlEX.imm_sel
 
@@ -37,11 +37,10 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   ALU.io.op1 := Mux(io.in.ctrlEX.op1_sel===OP1_RS1, io.in.rs1, io.in.pc)
   ALU.io.op2 := Mux(io.in.ctrlEX.op2_sel===OP2_RS2, io.in.rs2, ImmGen.io.out)
   ALU.io.fun := io.in.ctrlEX.alu_fun
-
   // 出力
   //
   io.exetoifjumpsignals.aluout := ALU.io.out
-  io.exetoifjumpsignals.branchbool := MuxLookup(io.in.ctrlEX.br_type, PC_CSR, Array(
+  io.exetoifjumpsignals.branchbool := MuxLookup(io.in.ctrlEX.br_type, false.B, Array(
     BR_N  -> false.B,
     BR_J  -> true.B,
     BR_NE -> Mux(!BranchComp.io.branComOut.br_eq, true.B, false.B),
@@ -53,7 +52,6 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
     BR_J  -> true.B,
     BR_JR -> true.B))
   io.pipe_flush := io.exetoifjumpsignals.branchbool // 分岐するならフラッシュするから
-
   io.out.pc := io.in.pc
   io.out.alu := ALU.io.out
   io.out.rs2 := io.in.rs2

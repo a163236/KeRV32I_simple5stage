@@ -22,6 +22,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // https://inst.eecs.berkeley.edu/~cs61c/resources/su18_lec/Lecture13.pdf
   // まずは使うModule宣言
   val regFile = Module(new RegisterFile())
+  //val csrFile = Module(new CSRFile())
 
   //==============================================
 
@@ -52,6 +53,9 @@ class Dpath(implicit val conf:Configurations) extends Module{
   ifid_regs.io.pipe_flush := exe_stage.io.pipe_flush
   idex_regs.io.pipe_flush := exe_stage.io.pipe_flush
 
+  // csrからの例外の有無とpc
+  if_stage.io.memtoifjumpsignals := mem_stage.io.memtoifjumpsignals
+
   // 命令メモリ接続
   io.imem <> if_stage.io.imem
   //io.imem <> ifid_regs.io.imem
@@ -69,6 +73,8 @@ class Dpath(implicit val conf:Configurations) extends Module{
   regFile.io.wen := wb_stage.io.registerFileIO.wen
   regFile.io.waddr := wb_stage.io.registerFileIO.waddr
   regFile.io.wdata := wb_stage.io.registerFileIO.wdata
+
+  // CSRの接続
 
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0

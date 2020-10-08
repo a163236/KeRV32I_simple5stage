@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineRegisters
 
 import chisel3._
+import common._
 import common.CommonPackage._
 import rv32i_5stage._
 
@@ -37,6 +38,7 @@ class EXMEM_REGS extends Module{
   ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
   ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
   ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
+  ctrl_mem_regs.csr_cmd := io.in.ctrlMEM.csr_cmd
   ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
   ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
 
@@ -48,6 +50,7 @@ class EXMEM_REGS extends Module{
   io.out.ctrlMEM.dmem_en := ctrl_mem_regs.dmem_en
   io.out.ctrlMEM.dmem_wr := ctrl_mem_regs.dmem_wr
   io.out.ctrlMEM.dmem_mask := ctrl_mem_regs.dmem_mask
+  io.out.ctrlMEM.csr_cmd := ctrl_mem_regs.csr_cmd
   io.out.ctrlWB.wb_sel := ctrl_wb_regs.wb_sel
   io.out.ctrlWB.rf_wen := ctrl_wb_regs.rf_wen
 
@@ -57,4 +60,5 @@ class MEM_Ctrl_Regs{
   val dmem_en = Reg(Bool())
   val dmem_wr = Reg(Bool())
   val dmem_mask = Reg(UInt(MT_X.getWidth.W))
+  val csr_cmd = Reg(UInt(CSR.X.getWidth.W))
 }

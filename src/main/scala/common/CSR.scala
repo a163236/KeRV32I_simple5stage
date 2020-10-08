@@ -26,7 +26,7 @@ class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジ�
 
   // mstatus
   val SD,TSR,TW,TVM,MXR,SUM,MPRV,
-    SPP,MPIE,SPIE,MIE,SIE = RegInit(0.U(1.W))
+  SPP,MPIE,SPIE,MIE,SIE = RegInit(0.U(1.W))
   val XS,FS,MPP = RegInit(0.U(2.W))
 
   // mip レジスタのビット
@@ -58,8 +58,10 @@ class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジ�
         io.wdata := t
       }
     }
-
   }
+
+  //printf("mtvec=%x ", mtvec)
+  //printf("eret=%x ", io.eret)
 
   //================================================== I形式
   when(io.csr_cmd===CSR.I){
@@ -94,7 +96,6 @@ class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジ�
   mscratch := Cat(0.U)
   //
   io.outPC := mtvec
-
 }
 
 object CSR {  // CSR関連の定数

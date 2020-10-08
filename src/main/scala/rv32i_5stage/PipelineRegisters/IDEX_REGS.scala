@@ -1,6 +1,7 @@
 package rv32i_5stage.PipelineRegisters
 
 import chisel3._
+import common._
 import common.CommonPackage._
 import rv32i_5stage._
 
@@ -49,6 +50,7 @@ class IDEX_REGS extends Module{
     ctrl_mem_regs.dmem_en := MEN_1
     ctrl_mem_regs.dmem_wr := M_X
     ctrl_mem_regs.dmem_mask := MT_X
+    ctrl_mem_regs.csr_cmd := CSR.X
     ctrl_wb_regs.wb_sel := WB_X
     ctrl_wb_regs.rf_wen := WB_X
 
@@ -65,6 +67,7 @@ class IDEX_REGS extends Module{
     ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
     ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
     ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
+    ctrl_mem_regs.csr_cmd := io.in.ctrlMEM.csr_cmd
     ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
     ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
   }
@@ -83,6 +86,7 @@ class IDEX_REGS extends Module{
   io.out.ctrlMEM.dmem_en := ctrl_mem_regs.dmem_en
   io.out.ctrlMEM.dmem_wr := ctrl_mem_regs.dmem_wr
   io.out.ctrlMEM.dmem_mask := ctrl_mem_regs.dmem_mask
+  io.out.ctrlMEM.csr_cmd := ctrl_mem_regs.csr_cmd
   io.out.ctrlWB.wb_sel := ctrl_wb_regs.wb_sel
   io.out.ctrlWB.rf_wen := ctrl_wb_regs.rf_wen
 

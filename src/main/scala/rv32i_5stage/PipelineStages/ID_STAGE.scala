@@ -17,7 +17,7 @@ class ID_STAGE extends Module{
   io := DontCare
   io.registerFileIO := DontCare
 
-  val ctrlUnit = Module(new ControlUnit())
+  val ctrlUnit = Module(new Decoder())
 
 
   ctrlUnit.io.inst := io.in.inst

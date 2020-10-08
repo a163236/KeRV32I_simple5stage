@@ -1,10 +1,9 @@
-package rv32i_5stage
+package common
 
 import chisel3._
 import chisel3.util._
-import common._
+import common.CommonPackage._
 import common.Instructions._
-import CommonPackage._
 
 class CtrlEX extends Bundle{  // 実行ステージの制御信号
   val br_type = Output(UInt(BR_N.getWidth.W))
@@ -18,6 +17,7 @@ class CtrlMEM extends Bundle{ // メモリステージの制御信号
   val dmem_en = Output(Bool())
   val dmem_wr = Output(Bool())
   val dmem_mask = Output(UInt(MT_X.getWidth.W))
+  val csr_cmd = Output(UInt(CSR.X.getWidth.W))
 }
 
 class CtrlWB extends Bundle{  // ライトバックステージの制御信号
@@ -25,15 +25,15 @@ class CtrlWB extends Bundle{  // ライトバックステージの制御信号
   val rf_wen  = Output(Bool())
 }
 
-class ControlUnitIO extends Bundle{
+class DecoderIO extends Bundle{
   val inst = Input(UInt(32.W))
   val ctrlEX = new CtrlEX
   val ctrlMEM = new CtrlMEM
   val ctrlWB = new CtrlWB
 }
 
-class ControlUnit extends Module{
-  val io = IO(new ControlUnitIO)
+class Decoder extends Module{
+  val io = IO(new DecoderIO)
   io := DontCare
 
   val csignals =
@@ -96,8 +96,9 @@ class ControlUnit extends Module{
         CSRRS  -> List(Y, BR_N, OP1_RS1, OP2_X, IMM_X, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.S, N),
         CSRRC  -> List(Y, BR_N, OP1_RS1, OP2_X, IMM_X, ALU_COPYrs1, WB_CSR, REN_1, MEN_0, M_X, MT_X, CSR.C, N),
 
+        // 例外発生させる
         ECALL  -> List(Y, BR_N, OP1_X, OP2_X, IMM_X, ALU_X, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.I, N),
-        MRET   -> List(Y, BR_N, OP1_X, OP2_X, IMM_X, ALU_X, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.I, N),
+        MRET   -> List(Y, BR_N, OP1_X, OP2_X, IMM_X, ALU_X, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.I, N), // ユーザーモードに戻る
         //DRET    -> List(Y, BR_N  , OP1_X  , OP2_X  ,  ALU_X    , WB_X  , REN_0, MEN_0, M_X  , MT_X,  CSR.I),
         EBREAK -> List(Y, BR_N, OP1_X, OP2_X, IMM_X, ALU_X, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.I, N),
         WFI    -> List(Y, BR_N, OP1_X, OP2_X, IMM_X, ALU_X, WB_X, REN_0, MEN_0, M_X, MT_X, CSR.N, N), // implemented as a NOP
@@ -123,6 +124,7 @@ class ControlUnit extends Module{
   io.ctrlMEM.dmem_en := cs_mem_en
   io.ctrlMEM.dmem_wr := cs_mem_wr
   io.ctrlMEM.dmem_mask := cs_mem_mask
+  io.ctrlMEM.csr_cmd := cs_csr_cmd
 
   // ライトバック
   io.ctrlWB.rf_wen := cs_rf_wen

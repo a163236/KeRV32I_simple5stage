@@ -14,7 +14,7 @@ class IF_STAGE_IO extends Bundle{
   val out = new IFID_REGS_Output
   val imem = new InstMemPortIO
   val exetoifjumpsignals = Flipped(new EXEtoIFjumpsignalsIO)
-
+  val memtoifjumpsignals = Flipped(new MEMtoIFjumpsignalsIO)
 }
 
 class IF_STAGE extends Module{
@@ -27,13 +27,15 @@ class IF_STAGE extends Module{
   // 動作
   io.imem.req.renI := true.B
 
-  when(io.exetoifjumpsignals.branchbool === true.B){
+  when(io.memtoifjumpsignals.eret){
+    next_pc := io.memtoifjumpsignals.outPC
+  }.elsewhen(io.exetoifjumpsignals.branchbool){ // 分岐命令のとき
     next_pc := io.exetoifjumpsignals.aluout
   }.otherwise{
     next_pc := pc_reg + 4.U
   }
 
-  when(reset.asBool()===true.B){
+  when(reset.asBool()===true.B){  // 最初の初期化
     io.imem.req.raddrI := 0.U
   }.otherwise{
     io.imem.req.raddrI := next_pc
