@@ -15,6 +15,7 @@ class IF_STAGE_IO extends Bundle{
   val imem = new InstMemPortIO
   val exetoifjumpsignals = Flipped(new EXEtoIFjumpsignalsIO)
   val memtoifjumpsignals = Flipped(new MEMtoIFjumpsignalsIO)
+  val stallorFlush = Input(UInt(PIPE_X.getWidth.W))
 }
 
 class IF_STAGE extends Module{
@@ -27,16 +28,19 @@ class IF_STAGE extends Module{
   // 動作
   io.imem.req.renI := true.B
 
-  when(io.memtoifjumpsignals.eret){
+
+  when(io.memtoifjumpsignals.eret){ // 例外
     next_pc := io.memtoifjumpsignals.outPC
   }.elsewhen(io.exetoifjumpsignals.branchbool){ // 分岐命令のとき
     next_pc := io.exetoifjumpsignals.aluout
+  }.elsewhen(io.stallorFlush===PIPE_STALL){ // stall でそのまま
+    next_pc := pc_reg
   }.otherwise{
     next_pc := pc_reg + 4.U
   }
 
   when(reset.asBool()===true.B){  // 最初の初期化
-    io.imem.req.raddrI := 0.U
+    io.imem.req.raddrI := START_ADDR.U
   }.otherwise{
     io.imem.req.raddrI := next_pc
   }

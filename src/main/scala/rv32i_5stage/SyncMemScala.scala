@@ -29,8 +29,9 @@ class DataMemReqIO extends Bundle{
   val addrD = Output(UInt(32.W))   // アドレス
   val wdataD = Output(UInt(32.W))   // 書き込みデータ
 
-  val mask  = Output(UInt(M_X.getWidth.W)) //  half?byte?
-  val wr = Output(UInt(MT_X.getWidth.W)) //  書き込みか読み込みか
+  val enD = Output(UInt(MEN_X.getWidth.W))
+  val mask = Output(UInt(MT_X.getWidth.W))
+  val wr  = Output(UInt(M_X.getWidth.W))
 }
 
 class MemRespIO extends Bundle{
@@ -75,19 +76,19 @@ class SyncMemScala extends Module {
   syncmemblackbox.io.renI := io.instmport.req.renI
   // データメモリ接続
   syncmemblackbox.io.addrD := io.datamport.req.addrD
-  syncmemblackbox.io.renD := Mux(io.datamport.req.mask===M_XRD, true.B, false.B)
-  syncmemblackbox.io.wenD := Mux(io.datamport.req.mask===M_XWR, true.B, false.B)
+  syncmemblackbox.io.renD := Mux(io.datamport.req.wr===M_XRD && io.datamport.req.enD===MEN_1, true.B, false.B)
+  syncmemblackbox.io.wenD := Mux(io.datamport.req.wr===M_XWR && io.datamport.req.enD===MEN_1, true.B, false.B)
   syncmemblackbox.io.wdataD := io.datamport.req.wdataD
   syncmemblackbox.io.MaskD := mask
   io.datamport.resp.rdata := syncmemblackbox.io.rdataD
 
+  printf("%x \n", mask)
   // 書き込みのとき用
-  when(io.datamport.req.wr===MT_B){ // バイトのとき
+  when(io.datamport.req.mask===MT_B){ // バイトのとき
     mask := 1.U << io.datamport.req.addrD(1,0)
-    printf("%x ",mask)
-  }.elsewhen(io.datamport.req.wr===MT_H) { // ハーフワードのとき
+  }.elsewhen(io.datamport.req.mask===MT_H) { // ハーフワードのとき
     mask := 3.U << io.datamport.req.addrD(1,0)
-  }.elsewhen(io.datamport.req.wr===MT_W){
+  }.elsewhen(io.datamport.req.mask===MT_W){
     mask := 7.U << io.datamport.req.addrD(1,0)
   }
 
@@ -97,7 +98,7 @@ class SyncMemScala extends Module {
   io.instmport.resp.rdata := syncmemblackbox.io.rdataI
   io.datamport.resp.rdata := tmpans
 
-  switch(io.datamport.req.wr){
+  switch(io.datamport.req.mask){
     is(MT_B){
       tmpans := MuxLookup(io.datamport.req.addrD(1,0),rdataD(7,0),Array(
         0.U -> rdataD(7,0),

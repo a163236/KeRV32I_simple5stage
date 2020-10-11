@@ -19,12 +19,14 @@ class ID_STAGE extends Module{
   io.registerFileIO := DontCare
 
   val ctrlUnit = Module(new Decoder())
-
+  val rs1_addr = io.in.inst(RS1_MSB, RS1_LSB)
+  val rs2_addr = io.in.inst(RS2_MSB, RS2_LSB)
 
   ctrlUnit.io.inst := io.in.inst
   // 外部のレジスタへアドレス送信
-  io.registerFileIO.rs1_addr := io.in.inst(RS1_MSB, RS1_LSB)
-  io.registerFileIO.rs2_addr := io.in.inst(RS2_MSB, RS2_LSB)
+  io.registerFileIO.rs1_addr := rs1_addr
+  io.registerFileIO.rs2_addr := rs2_addr
+
 
   // 出力
   io.out.pc := io.in.pc

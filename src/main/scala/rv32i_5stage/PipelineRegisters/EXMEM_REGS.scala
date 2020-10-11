@@ -18,6 +18,7 @@ class EXMEM_REGS_Output extends Bundle{
 class EXMEM_REGS_IO extends Bundle{
   val in = Flipped(new EXMEM_REGS_Output)
   val out = new EXMEM_REGS_Output
+  val pipe_stallorflush = Input(UInt(PIPE_X.getWidth.W))
 }
 
 class EXMEM_REGS extends Module{
@@ -31,17 +32,31 @@ class EXMEM_REGS extends Module{
   val ctrl_wb_regs = new WB_Ctrl_Regs
 
   // 入力
-  pc := io.in.pc
-  alu := io.in.alu
-  rs2 := io.in.rs2
-  inst := io.in.inst
-  ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
-  ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
-  ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
-  ctrl_mem_regs.csr_cmd := io.in.ctrlMEM.csr_cmd
-  ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
-  ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
 
+  when(io.pipe_stallorflush===PIPE_FLUSH){
+    pc := 0.U
+    alu := 0.U
+    rs2 := 0.U
+    inst := BUBBLE
+    ctrl_mem_regs.dmem_en := MEN_0
+    ctrl_mem_regs.dmem_wr := M_X
+    ctrl_mem_regs.dmem_mask := MT_X
+    ctrl_mem_regs.csr_cmd := 0.U
+    ctrl_wb_regs.wb_sel := WB_X
+    ctrl_wb_regs.rf_wen := REN_X
+
+  }.otherwise{
+    pc := io.in.pc
+    alu := io.in.alu
+    rs2 := io.in.rs2
+    inst := io.in.inst
+    ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
+    ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
+    ctrl_mem_regs.dmem_mask := io.in.ctrlMEM.dmem_mask
+    ctrl_mem_regs.csr_cmd := io.in.ctrlMEM.csr_cmd
+    ctrl_wb_regs.wb_sel := io.in.ctrlWB.wb_sel
+    ctrl_wb_regs.rf_wen := io.in.ctrlWB.rf_wen
+  }
   // 出力
   io.out.pc := pc
   io.out.alu := alu

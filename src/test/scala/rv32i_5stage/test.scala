@@ -40,40 +40,53 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
 
     test(new SyncMemScala()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
-
-      c.io.datamport.req.mask.poke(M_XRD)
-      c.io.datamport.req.wr.poke(MT_W)
-      c.io.datamport.req.addrD.poke(0.U)
-      println(c.io.datamport.resp.rdata.peek())
       c.clock.step(1)
-      println(c.io.datamport.resp.rdata.peek())
 
-      c.io.datamport.req.mask.poke(M_XWR)
-      c.io.datamport.req.wr.poke(MT_H)
-      c.io.datamport.req.addrD.poke(1.U)
-      c.io.datamport.req.wdataD.poke(0.U)
+      c.io.datamport.req.wr.poke(M_XRD)
+      c.io.datamport.req.mask.poke(MT_W)
+      c.io.datamport.req.enD.poke(MEN_1)
+      c.io.datamport.req.addrD.poke(0.U)
+      //println(c.io.datamport.resp.rdata.peek())
       c.clock.step(1)
       //println(c.io.datamport.resp.rdata.peek())
 
-      c.io.datamport.req.mask.poke(M_XRD)
-      c.io.datamport.req.wr.poke(MT_W)
+      c.io.datamport.req.wr.poke(M_XWR)
+      c.io.datamport.req.mask.poke(MT_W)
+      c.io.datamport.req.enD.poke(MEN_1)
+      c.io.datamport.req.addrD.poke(0.U)
+      c.io.datamport.req.wdataD.poke(3.U)
+      c.clock.step(1)
+      //println(c.io.datamport.resp.rdata.peek())
+
+      c.io.datamport.req.wr.poke(M_XRD)
+      c.io.datamport.req.mask.poke(MT_W)
+      c.io.datamport.req.enD.poke(MEN_1)
       c.io.datamport.req.addrD.poke(0.U)
       c.clock.step(1)
-      println(c.io.datamport.resp.rdata.peek())
-
-    }
-  }
-
-  "SyncReadMEM" should "" in{
-    test(new SyncReadMEM){c=>
-      c.io.instmport.req.renI.poke(true.B)
-      c.io.instmport.req.raddrI.poke(4.U)
-      //println(c.io.instmport.resp.rdata.peek())
       c.clock.step(1)
-      //println(c.io.instmport.resp.rdata.peek())
+      //println(c.io.datamport.resp.rdata.peek())
+
 
     }
   }
+
+  "instSyncMemScala" should "" in{
+
+    test(new SyncMemScala()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
+
+
+      c.io.instmport.req.renI.poke(MEN_1)
+      c.io.instmport.req.raddrI.poke(0.U)
+      c.clock.step(1)
+
+
+
+      c.clock.step(1)
+
+
+    }
+  }
+
 
   "InstMemory" should "" in{
     test(new InstMemory()){c=>

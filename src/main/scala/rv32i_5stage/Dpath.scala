@@ -23,7 +23,8 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // まずは使うModule宣言
   val regFile = Module(new RegisterFile())
   //val csrFile = Module(new CSRFile())
-  val forwardingUnit = Module(new ForwardingUnit())
+  val ForwardingUnit = Module(new ForwardingUnit())
+  val HazardUnit = Module(new HazardUnit())
 
   //==============================================
 
@@ -54,6 +55,20 @@ class Dpath(implicit val conf:Configurations) extends Module{
   ifid_regs.io.pipe_flush := exe_stage.io.pipe_flush
   idex_regs.io.pipe_flush := exe_stage.io.pipe_flush
 
+  // ハザードユニットへの入力
+  HazardUnit.io.exe.rs1_addr := exe_stage.io.hazard.rs1_addr
+  HazardUnit.io.exe.rs2_addr := exe_stage.io.hazard.rs2_addr
+  HazardUnit.io.mem.mem_en := mem_stage.io.hazard.mem_en
+  HazardUnit.io.mem.mem_addr := mem_stage.io.hazard.mem_addr
+  HazardUnit.io.mem.mem_wr := mem_stage.io.hazard.mem_wr
+  HazardUnit.io.mem.mem_mask := mem_stage.io.hazard.mem_mask
+  // ハザードユニットから
+
+  if_stage.io.stallorFlush := HazardUnit.io.stallorflush.if_stage // pcのストール？
+  ifid_regs.io.pipe_stalllorflush := HazardUnit.io.stallorflush.ifid
+  idex_regs.io.pipe_stallorflush := HazardUnit.io.stallorflush.idexe
+  exmem_regs.io.pipe_stallorflush := HazardUnit.io.stallorflush.exemem
+
   // csrからの例外の有無とpc
   if_stage.io.memtoifjumpsignals := mem_stage.io.memtoifjumpsignals
 
@@ -78,9 +93,9 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // CSRの接続
 
   // フォワーディング
-  forwardingUnit.io.fwfromWB <> wb_stage.io.fwfromWB
-  forwardingUnit.io.fwfromMEM <> mem_stage.io.fwfromMEM
-  forwardingUnit.io.fwEXE <> exe_stage.io.fwUnit
+  ForwardingUnit.io.fwfromWB <> wb_stage.io.fwfromWB
+  ForwardingUnit.io.fwfromMEM <> mem_stage.io.fwfromMEM
+  ForwardingUnit.io.fwEXE <> exe_stage.io.fwUnit
 
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
@@ -90,8 +105,8 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // debugの信号線を増やさないとなぜか正しく表示されない。。。
   printf("pc_IFID=[%x] inst_IFID=[%x] || " +
     "pc_IDEX=[%x] rs1_IDEX=[%x] rs2_IDEX=[%x] inst_IDEX=[%x]  || " +
-    "pc_mem=[%x] alu_out=[%x] rs2_mem=[%x] inst_mem=[%x]  || " +
-    "memStage_out=[%x] inst_MEMWB_wb=[%x]  || " +
+    "pc_EXMEM=[%x] alu_out=[%x] rs2_EXMEM=[%x] inst_EXMEM=[%x]  || " +
+    "MEMWB_out=[%x] inst_MEMWB=[%x]  || " +
     "refwen=[%x] regwaddr=[%x] regwdata=[%x] reg_a0=[%x] " +
     " || "
 

@@ -22,6 +22,7 @@ class IDEX_REGS_IO extends Bundle {
   val in = Flipped(new IDEX_REGS_Output)
   val out = new IDEX_REGS_Output
   val pipe_flush = Input(Bool())
+  val pipe_stallorflush = Input(UInt(PIPE_X.getWidth.W))
 }
 
 class IDEX_REGS extends Module{
@@ -36,8 +37,7 @@ class IDEX_REGS extends Module{
   val ctrl_mem_regs = new MEM_Ctrl_Regs
   val ctrl_wb_regs = new WB_Ctrl_Regs
 
-  // 入力
-  when(io.pipe_flush){
+  when(io.pipe_flush){    // フラッシュ
     pc := 0.U
     rs1 := io.in.rs1
     rs2 := io.in.rs2
@@ -53,6 +53,23 @@ class IDEX_REGS extends Module{
     ctrl_mem_regs.csr_cmd := CSR.X
     ctrl_wb_regs.wb_sel := WB_X
     ctrl_wb_regs.rf_wen := WB_X
+
+  }.elsewhen(io.pipe_stallorflush===PIPE_STALL){  // ストール
+    pc := pc
+    rs1 := rs1
+    rs2 := rs2
+    inst := inst
+    ctrl_execute_regs.br_type := ctrl_execute_regs.br_type
+    ctrl_execute_regs.op1_sel := ctrl_execute_regs.op1_sel
+    ctrl_execute_regs.op2_sel := ctrl_execute_regs.op2_sel
+    ctrl_execute_regs.imm_sel := ctrl_execute_regs.imm_sel
+    ctrl_execute_regs.alu_fun := ctrl_execute_regs.alu_fun
+    ctrl_mem_regs.dmem_en := ctrl_mem_regs.dmem_en
+    ctrl_mem_regs.dmem_wr := ctrl_mem_regs.dmem_wr
+    ctrl_mem_regs.dmem_mask := ctrl_mem_regs.dmem_mask
+    ctrl_mem_regs.csr_cmd := ctrl_mem_regs.csr_cmd
+    ctrl_wb_regs.wb_sel := ctrl_wb_regs.wb_sel
+    ctrl_wb_regs.rf_wen := ctrl_wb_regs.rf_wen
 
   }.otherwise{
     pc := io.in.pc

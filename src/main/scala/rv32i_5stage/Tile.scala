@@ -17,6 +17,11 @@ class Tile(implicit val conf: Configurations) extends Module{
   // メモリとコア
   bram.io.instmport <> core.io.imem
   bram.io.datamport <> core.io.dmem
+  printf("%x ", core.io.dmem.req.enD)
+  printf("%x ", core.io.dmem.req.mask)
+  printf("%x ", core.io.dmem.req.addrD)
+  printf("%x ", core.io.dmem.req.wdataD)
+  printf("%x ", core.io.dmem.resp.rdata)
 
   // デバッグ
   io.debug <> core.io.debug

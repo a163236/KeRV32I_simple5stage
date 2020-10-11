@@ -85,7 +85,6 @@ trait ScalarOpConstants{
   val FW2_WB = 2.asUInt(2.W)
   val FW2_X = 0.asUInt(2.W)
 
-
   // Register File Write Enable Signal レジスタファイル書き込み有効信号
   val REN_0   = false.B
   val REN_1   = true.B
@@ -143,6 +142,11 @@ trait ScalarOpConstants{
   val MT_READ  = 0.asUInt(2.W)
   val MT_WRITE = 1.asUInt(2.W)
   val MT_FENCE = 2.asUInt(2.W)
+
+  // hazard or stall
+  val PIPE_X = 0.asUInt(2.W)
+  val PIPE_FLUSH = 1.asUInt(2.W)
+  val PIPE_STALL = 2.asUInt(2.W)
 }
 
 trait MemoryOpConstants
