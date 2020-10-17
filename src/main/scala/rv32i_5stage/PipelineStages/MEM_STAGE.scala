@@ -39,8 +39,8 @@ class MEM_STAGE extends Module{
   csrFile.io.rs1 := io.in.alu // rs1はALUからもらっている
 
   // dmem接続
-  io.dmem.req.wr := io.in.ctrlMEM.dmem_mask
-  io.dmem.req.mask := io.in.ctrlMEM.dmem_wr
+  io.dmem.req.mask := io.in.ctrlMEM.dmem_mask
+  io.dmem.req.wr := io.in.ctrlMEM.dmem_wr
   io.dmem.req.addrD := io.in.alu
   io.dmem.req.wdataD := io.in.rs2
   io.dmem.req.enD := io.in.ctrlMEM.dmem_en
@@ -65,6 +65,5 @@ class MEM_STAGE extends Module{
   // 例外のIFへの出力
   io.memtoifjumpsignals.outPC := csrFile.io.outPC
   io.memtoifjumpsignals.eret := csrFile.io.eret
-
 
 }

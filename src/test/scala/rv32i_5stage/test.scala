@@ -27,9 +27,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
         println(
           c.io.debug.pc.peek()
         )
-
          */
-
         c.clock.step(1)
       }
 
@@ -47,8 +45,8 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
       c.io.datamport.req.enD.poke(MEN_1)
       c.io.datamport.req.addrD.poke(0.U)
       //println(c.io.datamport.resp.rdata.peek())
+      c.io.datamport.resp.rdata.expect(0.U)
       c.clock.step(1)
-      //println(c.io.datamport.resp.rdata.peek())
 
       c.io.datamport.req.wr.poke(M_XWR)
       c.io.datamport.req.mask.poke(MT_W)
@@ -63,7 +61,17 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
       c.io.datamport.req.enD.poke(MEN_1)
       c.io.datamport.req.addrD.poke(0.U)
       c.clock.step(1)
+      c.io.datamport.resp.rdata.expect(3.U)
+
+      c.io.datamport.req.wr.poke(M_XRD)
+      c.io.datamport.req.mask.poke(MT_W)
+      c.io.datamport.req.enD.poke(MEN_1)
+      c.io.datamport.req.addrD.poke(0.U)
       c.clock.step(1)
+      c.io.datamport.resp.rdata.expect(3.U)
+
+      c.clock.step(1)
+      c.io.datamport.resp.rdata.expect(3.U)
       //println(c.io.datamport.resp.rdata.peek())
 
 

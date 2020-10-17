@@ -50,10 +50,4 @@ class IF_STAGE extends Module{
   io.out.pc := pc_reg
   io.out.inst := io.imem.resp.rdata
 
-  /*
-  printf("%x ", io.out.pc)
-  printf("%x ", io.imem.resp.rdata)
-  printf("\n")
-
-   */
 }

@@ -155,7 +155,7 @@ trait MemoryOpConstants
   val MT_X  = 0.asUInt(3.W)
   val MT_B  = 1.asUInt(3.W) // byte?
   val MT_H  = 2.asUInt(3.W) // half-word
-  val MT_W  = 3.asUInt(3.W) // wordfe5212
+  val MT_W  = 3.asUInt(3.W) // wordf
   val MT_D  = 4.asUInt(3.W)
   val MT_BU = 5.asUInt(3.W)
   val MT_HU = 6.asUInt(3.W)

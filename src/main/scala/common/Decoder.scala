@@ -128,6 +128,6 @@ class Decoder extends Module{
 
   // ライトバック
   io.ctrlWB.rf_wen := cs_rf_wen
-
+  io.ctrlWB.wb_sel := cs_wb_sel
 
 }

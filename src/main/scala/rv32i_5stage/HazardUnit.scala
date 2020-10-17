@@ -32,6 +32,17 @@ class HazardUnitIO extends Bundle{
 
 class HazardUnit extends Module{
   val io = IO(new HazardUnitIO)
+  /*
+  printf("mem_wr=%x ", io.mem.mem_wr)
+  printf("mem_en=%x ", io.mem.mem_en)
+  printf("memaddr=%x ",io.mem.mem_addr)
+  printf("rs1_addr=%x ", io.exe.rs1_addr)
+  printf("rs2_addr=%x ", io.exe.rs2_addr)
+
+  printf("%x ",io.mem.mem_wr===M_XRD && io.mem.mem_en===MEN_1 &&
+    (io.mem.mem_addr === io.exe.rs1_addr || io.mem.mem_addr === io.exe.rs2_addr))
+
+   */
 
   // ロードのあとのストール
   when(io.mem.mem_wr===M_XRD && io.mem.mem_en===MEN_1 &&
@@ -41,6 +52,7 @@ class HazardUnit extends Module{
     io.stallorflush.ifid := PIPE_STALL
     io.stallorflush.idexe := PIPE_STALL
     io.stallorflush.exemem := PIPE_FLUSH  // ?
+    printf("Hazard-stall! ")
   }.otherwise{
     io.stallorflush.if_stage := PIPE_X
     io.stallorflush.ifid := PIPE_X
