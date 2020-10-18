@@ -22,7 +22,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
   "Tile" should "" in{
     test(new Tile()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
-      for(i <- 0 to 500){
+      for(i <- 0 to 700){
         /*
         println(
           c.io.debug.pc.peek()
@@ -30,7 +30,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
          */
         c.clock.step(1)
       }
-      c.io.debug.reg_a0.expect(0.U)
+      c.io.led.out.expect(0.U)
     }
   }
 

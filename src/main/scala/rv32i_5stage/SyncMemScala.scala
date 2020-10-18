@@ -101,17 +101,9 @@ class SyncMemScala extends Module {
 
   io.instmport.resp.rdata := syncmemblackbox.io.rdataI
   io.datamport.resp.rdata := tmpans
-
+  printf("%x ", tmpans)
   switch(reg_mask){
     is(MT_B){
-      tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
-        0.U -> rdataD(7,0),
-        1.U -> rdataD(15,8),
-        2.U -> rdataD(23,16),
-        3.U -> rdataD(31,24)
-      ))
-    }
-    is(MT_BU){
       tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
         0.U -> Cat(Fill(24, rdataD(7)), rdataD(7,0)),
         1.U -> Cat(Fill(24, rdataD(15)), rdataD(15,8)),
@@ -119,36 +111,44 @@ class SyncMemScala extends Module {
         3.U -> Cat(Fill(24, rdataD(31)), rdataD(31,24)),
       ))
     }
-    is(MT_H){
-      tmpans := MuxLookup(reg_addrD, rdataD(15,0),Array(
-        0.U -> rdataD(15,0),
-        1.U -> rdataD(23,8),
-        2.U -> rdataD(31,16),
+    is(MT_BU){
+      tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
+        0.U -> rdataD(7,0),
+        1.U -> rdataD(15,8),
+        2.U -> rdataD(23,16),
         3.U -> rdataD(31,24)
       ))
     }
-    is(MT_HU){
-      tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
+    is(MT_H){
+      tmpans := MuxLookup(reg_addrD, rdataD(15,0),Array(
         0.U -> Cat(Fill(24, rdataD(15)), rdataD(15,0)),
         1.U -> Cat(Fill(24, rdataD(23)), rdataD(23,8)),
         2.U -> Cat(Fill(24, rdataD(31)), rdataD(31,16)),
         3.U -> Cat(Fill(24, rdataD(31)), rdataD(31,24)),
       ))
     }
-    is(MT_W) {
-      tmpans := MuxLookup(reg_addrD, rdataD(31, 0), Array(
-        0.U -> rdataD(31, 0),
-        1.U -> rdataD(31, 8),
-        2.U -> rdataD(31, 16),
-        3.U -> rdataD(31, 24)
+    is(MT_HU){
+      tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
+        0.U -> rdataD(15,0),
+        1.U -> rdataD(23,8),
+        2.U -> rdataD(31,16),
+        3.U -> rdataD(31,24)
       ))
     }
-    is(MT_WU){
-      tmpans := MuxLookup(reg_addrD, rdataD(31,0),Array(
+    is(MT_W) {
+      tmpans := MuxLookup(reg_addrD, rdataD(31, 0), Array(
         0.U -> rdataD(31,0),
         1.U -> rdataD(31,8),
         2.U -> rdataD(31,16),
         3.U -> rdataD(31,24)
+      ))
+    }
+    is(MT_WU){
+      tmpans := MuxLookup(reg_addrD, rdataD(31,0),Array(
+        0.U -> rdataD(31, 0),
+        1.U -> rdataD(31, 8),
+        2.U -> rdataD(31, 16),
+        3.U -> rdataD(31, 24)
       ))
     }
   }
