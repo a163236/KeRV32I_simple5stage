@@ -12,6 +12,7 @@ class EXMEM_REGS_Output extends Bundle{
   val pc = Output(UInt(32.W))
   val alu = Output(UInt(32.W))
   val rs2 = Output(UInt(32.W))
+  val csr_addr = Output(UInt(12.W))
   val inst = Output(UInt(32.W))
 }
 
@@ -26,6 +27,7 @@ class EXMEM_REGS extends Module{
 
   val pc = Reg(UInt(32.W))
   val rs2 = Reg(UInt(32.W))
+  val csr_addr = Reg(UInt(12.W))
   val alu = Reg(UInt(32.W))
   val inst = Reg(UInt(32.W))
   val ctrl_mem_regs = new MEM_Ctrl_Regs
@@ -37,6 +39,7 @@ class EXMEM_REGS extends Module{
     pc := 0.U
     alu := 0.U
     rs2 := 0.U
+    csr_addr := 0.U
     inst := BUBBLE
     ctrl_mem_regs.dmem_en := MEN_0
     ctrl_mem_regs.dmem_wr := M_X
@@ -49,6 +52,7 @@ class EXMEM_REGS extends Module{
     pc := io.in.pc
     alu := io.in.alu
     rs2 := io.in.rs2
+    csr_addr := io.in.csr_addr
     inst := io.in.inst
     ctrl_mem_regs.dmem_en := io.in.ctrlMEM.dmem_en
     ctrl_mem_regs.dmem_wr := io.in.ctrlMEM.dmem_wr
@@ -61,6 +65,7 @@ class EXMEM_REGS extends Module{
   io.out.pc := pc
   io.out.alu := alu
   io.out.rs2 := rs2
+  io.out.csr_addr := csr_addr
   io.out.inst := inst
   io.out.ctrlMEM.dmem_en := ctrl_mem_regs.dmem_en
   io.out.ctrlMEM.dmem_wr := ctrl_mem_regs.dmem_wr

@@ -22,9 +22,9 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // https://inst.eecs.berkeley.edu/~cs61c/resources/su18_lec/Lecture13.pdf
   // まずは使うModule宣言
   val regFile = Module(new RegisterFile())
-  //val csrFile = Module(new CSRFile())
   val ForwardingUnit = Module(new ForwardingUnit())
   val HazardUnit = Module(new HazardUnit())
+
 
   //==============================================
 
@@ -63,7 +63,6 @@ class Dpath(implicit val conf:Configurations) extends Module{
   HazardUnit.io.mem.mem_wr := mem_stage.io.hazard.mem_wr
   HazardUnit.io.mem.mem_mask := mem_stage.io.hazard.mem_mask
   // ハザードユニットから
-
   if_stage.io.stallorFlush := HazardUnit.io.stallorflush.if_stage // pcのストール？
   ifid_regs.io.pipe_stalllorflush := HazardUnit.io.stallorflush.ifid
   idex_regs.io.pipe_stallorflush := HazardUnit.io.stallorflush.idexe

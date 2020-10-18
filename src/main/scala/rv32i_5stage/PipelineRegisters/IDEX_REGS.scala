@@ -16,6 +16,7 @@ class IDEX_REGS_Output extends Bundle{
   val rs1 = Output(UInt(32.W))
   val rs2 = Output(UInt(32.W))
   val inst = Output(UInt(32.W))
+  val csr_addr = Output(UInt(32.W))
 }
 
 class IDEX_REGS_IO extends Bundle {
@@ -32,6 +33,7 @@ class IDEX_REGS extends Module{
   val pc = Reg(UInt(32.W))
   val rs1 = Reg(UInt(32.W))
   val rs2 = Reg(UInt(32.W))
+  val csr_addr = Reg(UInt(12.W))
   val inst = Reg(UInt(32.W))
   val ctrl_execute_regs = new EX_Ctrl_Regs
   val ctrl_mem_regs = new MEM_Ctrl_Regs
@@ -41,6 +43,7 @@ class IDEX_REGS extends Module{
     pc := 0.U
     rs1 := io.in.rs1
     rs2 := io.in.rs2
+    csr_addr := io.in.csr_addr
     inst := BUBBLE
     ctrl_execute_regs.br_type := PC_4
     ctrl_execute_regs.op1_sel := OP1_X
@@ -58,6 +61,7 @@ class IDEX_REGS extends Module{
     pc := pc
     rs1 := rs1
     rs2 := rs2
+    csr_addr := csr_addr
     inst := inst
     ctrl_execute_regs.br_type := ctrl_execute_regs.br_type
     ctrl_execute_regs.op1_sel := ctrl_execute_regs.op1_sel
@@ -75,6 +79,7 @@ class IDEX_REGS extends Module{
     pc := io.in.pc
     rs1 := io.in.rs1
     rs2 := io.in.rs2
+    csr_addr := io.in.csr_addr
     inst := io.in.inst
     ctrl_execute_regs.br_type := io.in.ctrlEX.br_type
     ctrl_execute_regs.op1_sel := io.in.ctrlEX.op1_sel
@@ -93,6 +98,7 @@ class IDEX_REGS extends Module{
   io.out.pc := pc
   io.out.rs1 := rs1
   io.out.rs2 := rs2
+  io.out.csr_addr := csr_addr
   io.out.inst := inst
 
   io.out.ctrlEX.br_type := ctrl_execute_regs.br_type

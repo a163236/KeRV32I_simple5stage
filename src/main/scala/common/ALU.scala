@@ -31,5 +31,7 @@ class ALU(implicit val conf: Configurations) extends Module{
     ALU_COPYrs2-> io.op2
   ))
 
+  //printf("ALUrs1=%x ", io.op1)
+  //printf("ALUrs2=%x ", io.op2)
 
 }

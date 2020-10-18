@@ -34,6 +34,7 @@ class WB_STAGE extends Module{
   // フォワーディング
   io.fwfromWB.rd_addr := io.in.inst(RD_MSB, RD_LSB)
   io.fwfromWB.bypass_data := rf_wdata
+  io.fwfromWB.rfwen := io.in.ctrlWB.rf_wen
 
 
 }

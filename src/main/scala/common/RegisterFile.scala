@@ -18,13 +18,29 @@ class RegisterFile extends Module{
 
   val regfile = Mem(32, UInt(32.W))
 
+  // 書き込み
   when(io.wen && (io.waddr=/=0.U)){ // 書き込み有効かつ0レジスタ以外なら
     regfile(io.waddr) := io.wdata
   }
 
-  io.rs1_data := Mux((io.rs1_addr =/= 0.U), regfile(io.rs1_addr), 0.U)
-  io.rs2_data := Mux((io.rs2_addr =/= 0.U), regfile(io.rs2_addr), 0.U)
+  // rs1の読み込み
+  when(io.rs1_addr===0.U){  // アドレス0の読み出し
+    io.rs1_data := 0.U
+  }.elsewhen(io.rs1_addr===io.waddr){ // 書き込みアドレスと同じ時
+    io.rs1_data := io.wdata
+  }.otherwise{
+    io.rs1_data := regfile(io.rs1_addr)
+  }
 
+  // rs2の読み込み
+  when(io.rs2_addr===0.U){  // アドレス0の読み出し
+    io.rs2_data := 0.U
+  }.elsewhen(io.rs2_addr===io.waddr){ // 書き込みアドレスと同じ時
+    io.rs2_data := io.wdata
+  }.otherwise{
+    io.rs2_data := regfile(io.rs2_addr)
+  }
+
+  // デバッグ
   io.reg_a0 := regfile(10)
-
 }

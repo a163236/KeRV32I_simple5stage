@@ -5,9 +5,13 @@ import chisel3.util._
 
 import CommonPackage._
 
-class CSRFileIO(implicit val conf: Configurations) extends Bundle{  // CSRモジュールの入出力
+class CSRmemIO(implicit val conf: Configurations) extends Bundle{
+
+}
+
+class CSRIO(implicit val conf: Configurations) extends Bundle{  // CSRモジュールの入出力
   val inPC = Input(UInt(conf.xlen.W))    // データパスからの入力pc
-  val inst = Input(UInt(conf.xlen.W))     // 命令
+  val csr_addr = Input(UInt(12.W))     // csr読み込みアドレス
   val csr_cmd = Input(UInt(CSR.SZ))       // コントローラからのcsrコマンド
   val rs1  = Input(UInt(conf.xlen.W))     // ALUからrs1をもらう
 
@@ -18,7 +22,7 @@ class CSRFileIO(implicit val conf: Configurations) extends Bundle{  // CSRモジ
 }
 
 class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジュール
-  val io = IO(new CSRFileIO())
+  val io = IO(new CSRIO())
   io := DontCare
 
   // 今の特権モード状態
@@ -52,7 +56,7 @@ class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジ�
   //================================================== R形式
   when(io.csr_cmd===CSR.W){
     val t = WireInit(UInt(conf.xlen.W),0.U)    // t= レジスタファイルに書き込むデータ
-    switch(io.inst(CSR_ADDR_MSB,CSR_ADDR_LSB)){
+    switch(io.csr_addr){
       is(0x305.U){
         mtvec := io.rs1
         io.wdata := t
@@ -60,20 +64,17 @@ class CSRFile(implicit val conf: Configurations) extends Module{  // CSRモジ�
     }
   }
 
-  //printf("mtvec=%x ", mtvec)
-  //printf("eret=%x ", io.eret)
-
   //================================================== I形式
   when(io.csr_cmd===CSR.I){
     mepc := io.inPC   // 例外発生時のpc
 
-    when(io.inst(31,20)===0x302.U){//mretのとき
+    when(io.csr_addr===0x302.U){//mretのとき
       now_prv := MPP  // 特権が戻る
       MPIE := true.B  //
       MPP := PRV.U
 
     }.otherwise{
-      when(io.inst(20)){          // ebreakのとき
+      when(io.csr_addr(0)){          // ebreakのとき
         mcause := 3.U
       }.otherwise{                // ecallのとき
         mcause := 8.U+now_prv// 現在の特権モードに8を足す

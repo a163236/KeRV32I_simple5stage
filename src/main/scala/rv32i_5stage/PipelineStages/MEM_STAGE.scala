@@ -24,6 +24,7 @@ class MEM_STAGE_IO extends Bundle{
   val memtoifjumpsignals = new MEMtoIFjumpsignalsIO
   val fwfromMEM = Flipped(new FWMEM_IO)
   val hazard = Flipped(new Hazard_MEM_StageIO)
+
 }
 
 class MEM_STAGE extends Module{
@@ -34,7 +35,7 @@ class MEM_STAGE extends Module{
   val csrFile = Module(new CSRFile())
 
   csrFile.io.inPC := io.in.pc
-  csrFile.io.inst := io.in.inst
+  csrFile.io.csr_addr := io.in.csr_addr
   csrFile.io.csr_cmd := io.in.ctrlMEM.csr_cmd
   csrFile.io.rs1 := io.in.alu // rs1はALUからもらっている
 
@@ -56,6 +57,8 @@ class MEM_STAGE extends Module{
   // フォワーディング
   io.fwfromMEM.bypass_data := io.in.alu
   io.fwfromMEM.rd_addr := io.in.inst(RD_MSB, RD_LSB)
+  io.fwfromMEM.rfwen := io.in.ctrlWB.rf_wen
+
   // ハザード
   io.hazard.mem_addr := io.in.inst(RD_MSB, RD_LSB)
   io.hazard.mem_wr := io.in.ctrlMEM.dmem_wr

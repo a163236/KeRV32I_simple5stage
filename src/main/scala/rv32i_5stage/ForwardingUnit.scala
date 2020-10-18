@@ -8,11 +8,13 @@ import common.CommonPackage._
 class FWWB_IO extends Bundle{
   val rd_addr = Input(UInt(32.W))
   val bypass_data = Input(UInt(32.W))
+  val rfwen = Input(UInt(REN_X.getWidth.W))
 }
 
 class FWMEM_IO extends Bundle{
   val rd_addr = Input(UInt(32.W))
   val bypass_data = Input(UInt(32.W))
+  val rfwen = Input(UInt(REN_X.getWidth.W))
 }
 
 class FWEXE_IO extends Bundle{
@@ -37,19 +39,20 @@ class ForwardingUnit extends Module{
   val io = IO(new ForwardingUnitIO)
 
   // fw1_selの選択
-  when((io.fwfromMEM.rd_addr === io.fwEXE.rs1_addr) && io.fwfromMEM.rd_addr=/=0.U){  // MEMからが優先
-    io.fwEXE.rs1_sel := FW1_MEM
-  }.elsewhen((io.fwfromWB.rd_addr === io.fwEXE.rs1_addr) && io.fwfromWB.rd_addr=/=0.U){
+  when((io.fwfromMEM.rd_addr === io.fwEXE.rs1_addr) && io.fwfromMEM.rd_addr=/=0.U && io.fwfromMEM.rfwen===REN_1){  // MEMからが優先
+    io.fwEXE.rs1_sel := FW1_MEM // sel=1
+    //printf("rdaddr=%x ",io.fwfromMEM.rd_addr)
+    //printf("rs1addr=%x ",io.fwEXE.rs1_addr)
+  }.elsewhen((io.fwfromWB.rd_addr === io.fwEXE.rs1_addr) && io.fwfromWB.rd_addr=/=0.U && io.fwfromWB.rfwen===REN_1){
     io.fwEXE.rs1_sel := FW1_WB
   }.otherwise{
     io.fwEXE.rs1_sel := FW1_X
   }
 
-
   // fw2_selの選択
-  when((io.fwfromMEM.rd_addr === io.fwEXE.rs2_addr) && io.fwfromMEM.rd_addr=/=0.U){  // MEMからが優先
+  when((io.fwfromMEM.rd_addr === io.fwEXE.rs2_addr) && io.fwfromMEM.rd_addr=/=0.U && io.fwfromMEM.rfwen===REN_1){  // MEMからが優先
     io.fwEXE.rs2_sel := FW2_MEM
-  }.elsewhen((io.fwfromWB.rd_addr === io.fwEXE.rs2_addr) && io.fwfromWB.rd_addr=/=0.U){
+  }.elsewhen((io.fwfromWB.rd_addr === io.fwEXE.rs2_addr) && io.fwfromWB.rd_addr=/=0.U && io.fwfromWB.rfwen===REN_1){
     io.fwEXE.rs2_sel := FW2_WB
   }.otherwise{
     io.fwEXE.rs2_sel := FW2_X

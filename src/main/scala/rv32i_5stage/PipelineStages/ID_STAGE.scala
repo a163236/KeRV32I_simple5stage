@@ -33,6 +33,7 @@ class ID_STAGE extends Module{
   io.out.rs1 := io.registerFileIO.rs1_data
   io.out.rs2 := io.registerFileIO.rs2_data
   io.out.inst := io.in.inst
+  io.out.csr_addr := io.in.inst(CSR_ADDR_MSB, CSR_ADDR_LSB)
 
   io.out.ctrlEX <> ctrlUnit.io.ctrlEX
   io.out.ctrlMEM <> ctrlUnit.io.ctrlMEM

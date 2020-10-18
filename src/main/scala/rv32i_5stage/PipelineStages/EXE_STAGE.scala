@@ -25,18 +25,19 @@ class EXE_STAGE_IO extends Bundle{
 class EXE_STAGE(implicit val conf: Configurations) extends Module{
   val io = IO(new EXE_STAGE_IO)
 
-  io.out.rs2 := io.in.rs2
   io := DontCare
   val ALU = Module(new ALU())
   val BranchComp = Module(new BranchComp())
   val ImmGen = Module(new ImmGen())
 
-  // 入力
-  BranchComp.io.rs1_data := io.in.rs1
-  BranchComp.io.rs2_data := io.in.rs2
-  ImmGen.io.inst := io.in.inst
-  ImmGen.io.imm_sel := io.in.ctrlEX.imm_sel
-
+  // フォワーディングのアドレス
+  val rs1_addr = io.in.inst(RS1_MSB, RS1_LSB)
+  val rs2_addr = io.in.inst(RS2_MSB, RS2_LSB)
+  io.fwUnit.rs1_addr := rs1_addr
+  io.fwUnit.rs2_addr := rs2_addr
+  // ハザードのアドレス
+  io.hazard.rs1_addr := rs1_addr
+  io.hazard.rs2_addr := rs2_addr
 
   val rs1 = Wire(UInt(32.W))
   val rs2 = Wire(UInt(32.W))
@@ -50,21 +51,17 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
     FW2_MEM -> io.fwUnit.mem_bypassdata,
     FW2_WB -> io.fwUnit.wb_bypassdata
   ))
+
+  // 入力
+  BranchComp.io.rs1_data := rs1
+  BranchComp.io.rs2_data := rs2
+  ImmGen.io.inst := io.in.inst
+  ImmGen.io.imm_sel := io.in.ctrlEX.imm_sel
   ALU.io.op1 := Mux(io.in.ctrlEX.op1_sel===OP1_RS1, rs1, io.in.pc)
   ALU.io.op2 := Mux(io.in.ctrlEX.op2_sel===OP2_RS2, rs2, ImmGen.io.out)
   ALU.io.fun := io.in.ctrlEX.alu_fun
 
-
-  // フォワーディングのアドレス
-  val rs1_addr = io.in.inst(RS1_MSB, RS1_LSB)
-  val rs2_addr = io.in.inst(RS2_MSB, RS2_LSB)
-  io.fwUnit.rs1_addr := rs1_addr
-  io.fwUnit.rs2_addr := rs2_addr
-  // ハザードのアドレス
-  io.hazard.rs1_addr := rs1_addr
-  io.hazard.rs2_addr := rs2_addr
   // 出力
-
   io.exetoifjumpsignals.aluout := ALU.io.out
   io.exetoifjumpsignals.branchbool := MuxLookup(io.in.ctrlEX.br_type, false.B, Array(
     BR_N  -> false.B,
@@ -81,6 +78,7 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   io.out.pc := io.in.pc
   io.out.alu := ALU.io.out
   io.out.rs2 := rs2
+  io.out.csr_addr := io.in.csr_addr
   io.out.inst := io.in.inst
   io.out.ctrlMEM <> io.in.ctrlMEM
   io.out.ctrlWB <> io.in.ctrlWB
