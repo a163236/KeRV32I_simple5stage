@@ -41,7 +41,7 @@ class HazardUnit extends Module{
     io.stallorflush.ifid := PIPE_STALL
     io.stallorflush.idexe := PIPE_STALL
     io.stallorflush.exemem := PIPE_FLUSH  // ?
-    printf("Hazard-stall! ")
+    //printf("Hazard-stall! ")
   }.otherwise{
     io.stallorflush.if_stage := PIPE_X
     io.stallorflush.ifid := PIPE_X

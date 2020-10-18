@@ -68,6 +68,7 @@ class SyncMemScala extends Module {
     val datamport = Flipped(new DataMemPortIO())
   })
   val mask = WireInit(0.U(4.W))
+  val wdata = WireInit(0.U(32.W)) // 書き込むデータ
 
   val syncmemblackbox = Module(new SyncMem)
   syncmemblackbox.io.clk := clock
@@ -78,19 +79,20 @@ class SyncMemScala extends Module {
   syncmemblackbox.io.addrD := io.datamport.req.addrD
   syncmemblackbox.io.renD := Mux(io.datamport.req.wr===M_XRD && io.datamport.req.enD===MEN_1, true.B, false.B)
   syncmemblackbox.io.wenD := Mux(io.datamport.req.wr===M_XWR && io.datamport.req.enD===MEN_1, true.B, false.B)
-  syncmemblackbox.io.wdataD := io.datamport.req.wdataD
+  syncmemblackbox.io.wdataD := wdata //io.datamport.req.wdataD
   syncmemblackbox.io.MaskD := mask
   //io.datamport.resp.rdata := syncmemblackbox.io.rdataD
 
 
   // 書き込みのとき用
   when(io.datamport.req.mask===MT_B){ // バイトのとき
-    mask := 1.U << io.datamport.req.addrD(1,0)
+    mask := "b1".U << io.datamport.req.addrD(1,0)
   }.elsewhen(io.datamport.req.mask===MT_H) { // ハーフワードのとき
-    mask := 3.U << io.datamport.req.addrD(1,0)
+    mask := "b11".U << io.datamport.req.addrD(1,0)
   }.elsewhen(io.datamport.req.mask===MT_W){
-    mask := 15.U << io.datamport.req.addrD(1,0)
+    mask := "b1111".U << io.datamport.req.addrD(1,0)
   }
+  wdata := io.datamport.req.wdataD << 8.U*io.datamport.req.addrD(1,0) //書き込みデータも1ずらしておく
 
   // 出力 メモリ読み出し
   val rdataD = syncmemblackbox.io.rdataD
@@ -101,7 +103,15 @@ class SyncMemScala extends Module {
 
   io.instmport.resp.rdata := syncmemblackbox.io.rdataI
   io.datamport.resp.rdata := tmpans
-  printf("%x ", tmpans)
+  /*
+  printf("mask=%b ", mask)
+  printf("regaddr=%x ", reg_addrD)
+  printf("%x ", reg_mask)
+  printf("wdata=%x ", wdata)
+  printf("rdataD=%x ", rdataD)
+  printf("tempans=%x ", tmpans)
+   */
+
   switch(reg_mask){
     is(MT_B){
       tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
@@ -121,9 +131,9 @@ class SyncMemScala extends Module {
     }
     is(MT_H){
       tmpans := MuxLookup(reg_addrD, rdataD(15,0),Array(
-        0.U -> Cat(Fill(24, rdataD(15)), rdataD(15,0)),
-        1.U -> Cat(Fill(24, rdataD(23)), rdataD(23,8)),
-        2.U -> Cat(Fill(24, rdataD(31)), rdataD(31,16)),
+        0.U -> Cat(Fill(16, rdataD(15)), rdataD(15,0)),
+        1.U -> Cat(Fill(16, rdataD(23)), rdataD(23,8)),
+        2.U -> Cat(Fill(16, rdataD(31)), rdataD(31,16)),
         3.U -> Cat(Fill(24, rdataD(31)), rdataD(31,24)),
       ))
     }

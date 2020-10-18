@@ -1,5 +1,5 @@
 module SyncMem
-    #(parameter INIT_HEX_FILE = "./testfolder/hexfile/rv32ui/rv32ui-p-lh.hex")
+    #(parameter INIT_HEX_FILE = "./testfolder/hexfile/rv32ui/rv32ui-p-and.hex")
     (
     // クロック
     input clk,

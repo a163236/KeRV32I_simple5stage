@@ -4,7 +4,7 @@ import chisel3._
 
 class DebugIO(implicit val conf: Configurations) extends Bundle{
 
-  /*
+
   val reg_a0 = Output(UInt(conf.xlen.W))
   val pc = Output(UInt(conf.xlen.W))
 
@@ -21,8 +21,6 @@ class DebugIO(implicit val conf: Configurations) extends Bundle{
   val tmp2 = Output(UInt(conf.xlen.W))
   val tmp3 = Output(UInt(conf.xlen.W))
   val tmp4 = Output(UInt(conf.xlen.W))
-
-   */
 }
 
 class LEDDebugIO extends Bundle{
