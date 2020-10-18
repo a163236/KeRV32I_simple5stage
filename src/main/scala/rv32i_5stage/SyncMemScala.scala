@@ -92,7 +92,14 @@ class SyncMemScala extends Module {
   }.elsewhen(io.datamport.req.mask===MT_W){
     mask := "b1111".U << io.datamport.req.addrD(1,0)
   }
-  wdata := io.datamport.req.wdataD << 8.U*io.datamport.req.addrD(1,0) //書き込みデータも1ずらしておく
+
+  //書き込みデータも1ずらしておく
+  wdata := MuxLookup(io.datamport.req.addrD(1,0), io.datamport.req.wdataD, Array(
+    0.U -> io.datamport.req.wdataD,
+    1.U -> (io.datamport.req.wdataD << 8.U),
+    2.U -> (io.datamport.req.wdataD << 16.U),
+    3.U -> (io.datamport.req.wdataD << 24.U),
+  ))
 
   // 出力 メモリ読み出し
   val rdataD = syncmemblackbox.io.rdataD
