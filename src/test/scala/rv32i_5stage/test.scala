@@ -20,7 +20,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
   }
 
   "Tile" should "" in{
-    test(new Tile()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
+    test(new Tile("")).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
       for(i <- 0 to 700){
         /*
@@ -36,7 +36,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
 
   "SyncMemScala" should "" in{
 
-    test(new SyncMemScala()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
+    test(new SyncMemScala("")).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
       c.clock.step(1)
 
@@ -66,7 +66,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
 
   "instSyncMemScala" should "" in{
 
-    test(new SyncMemScala()).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
+    test(new SyncMemScala("")).withAnnotations(Seq(VerilatorBackendAnnotation)){c=>
 
 
       c.io.instmport.req.renI.poke(MEN_1)

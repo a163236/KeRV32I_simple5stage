@@ -56,13 +56,13 @@ class SyncMemBlackBoxIO extends Bundle{
   val MaskD = Input(UInt(4.W))
 }
 
-class SyncMem extends BlackBox with HasBlackBoxResource {
+class SyncMem(filename:String="./testfolder/hexfile/rv32ui/rv32ui-p-add.hex") extends BlackBox(Map("INIT_HEX_FILE" -> filename)) with HasBlackBoxResource {
   val io = IO(new SyncMemBlackBoxIO)
   addResource("/SyncMem.v")
 
 }
 
-class SyncMemScala extends Module {
+class SyncMemScala(filename:String) extends Module {
   val io = IO(new Bundle() {
     val instmport = Flipped(new InstMemPortIO())
     val datamport = Flipped(new DataMemPortIO())
@@ -70,7 +70,7 @@ class SyncMemScala extends Module {
   val mask = WireInit(0.U(4.W))
   val wdata = WireInit(0.U(32.W)) // 書き込むデータ
 
-  val syncmemblackbox = Module(new SyncMem)
+  val syncmemblackbox = Module(new SyncMem(filename))
   syncmemblackbox.io.clk := clock
   // 命令メモリ接続
   syncmemblackbox.io.raddrI := io.instmport.req.raddrI

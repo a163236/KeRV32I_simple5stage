@@ -13,7 +13,7 @@ class test() extends FlatSpec with ChiselScalatestTester with Matchers {
 
   behavior of "TileAndLED"
   it should "TileAndLED" in {
-    test(new TileAndLED()){ c =>
+    test(new TileAndLED("")){ c =>
       for (i <- 1 to 50) {
         //println(c.io.LEDout.anodes.peek())
         //println(c.io.LEDout.cathodes.peek())
