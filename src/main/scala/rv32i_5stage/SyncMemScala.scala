@@ -56,7 +56,7 @@ class SyncMemBlackBoxIO extends Bundle{
   val MaskD = Input(UInt(4.W))
 }
 
-class SyncMem(filename:String="./testfolder/hexfile/rv32ui/rv32ui-p-add.hex") extends BlackBox(Map("INIT_HEX_FILE" -> filename)) with HasBlackBoxResource {
+class SyncMem(filename:String="./testfolder/hexfile/rv32ui/temp_keita.hex") extends BlackBox(Map("INIT_HEX_FILE" -> filename)) with HasBlackBoxResource {
   val io = IO(new SyncMemBlackBoxIO)
   addResource("/SyncMem.v")
 

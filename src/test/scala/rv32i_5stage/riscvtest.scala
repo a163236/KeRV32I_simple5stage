@@ -12,14 +12,14 @@ import scala.Console._
 import scala.io.Source
 import scala.reflect.io._
 
-class riscvtest extends FlatSpec with ChiselScalatestTester with Matchers{
+class riscvtest() extends FlatSpec with ChiselScalatestTester with Matchers{
   implicit val conf = Configurations()
 
   def entrymemory(filename: String): Unit = {
     test(new Tile(filename)).withAnnotations(Seq(VerilatorBackendAnnotation)) { c =>
-      println(BLUE+filename+RESET)
-
-      for (i <- 1 to 900) {
+      println(BLUE+filename+RESET)  // ファイル名表示
+      c.clock.setTimeout(10000)     // タイムアウト 設定
+      for (i <- 1 to 2000) {
         c.clock.step(1)
       }
       c.io.led.out.expect(0.U) // gpレジスタが1ならパス
@@ -30,6 +30,7 @@ class riscvtest extends FlatSpec with ChiselScalatestTester with Matchers{
   behavior of "rv32ui-"
   val rv32ui_path = "testfolder/hexfile/rv32ui/"
 
+  "temp_keita" should "pass" in {entrymemory(rv32ui_path+"temp_keita.hex")}
   "add" should "pass" in {entrymemory(rv32ui_path+"rv32ui-p-add.hex")}
   "addi" should "pass" in {entrymemory(rv32ui_path+"rv32ui-p-addi.hex")}
   "and" should "pass" in {entrymemory(rv32ui_path+"rv32ui-p-and.hex")}
