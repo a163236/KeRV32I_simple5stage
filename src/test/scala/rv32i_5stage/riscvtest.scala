@@ -4,7 +4,7 @@ import chisel3._
 import chiseltest._
 import org.scalatest._
 import chiseltest.experimental.TestOptionBuilder._
-import chiseltest.internal.VerilatorBackendAnnotation
+import chiseltest.internal.{VerilatorBackendAnnotation, WriteVcdAnnotation}
 import common._
 import common.CommonPackage._
 
@@ -16,13 +16,13 @@ class riscvtest() extends FlatSpec with ChiselScalatestTester with Matchers{
   implicit val conf = Configurations()
 
   def entrymemory(filename: String): Unit = {
-    test(new Tile(filename)).withAnnotations(Seq(VerilatorBackendAnnotation)) { c =>
+    test(new Tile(filename)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { c =>
       println(BLUE+filename+RESET)  // ファイル名表示
       c.clock.setTimeout(10000)     // タイムアウト 設定
-      for (i <- 1 to 2000) {
+      for (i <- 1 to 1000) {
         c.clock.step(1)
       }
-      c.io.led.out.expect(0.U) // gpレジスタが1ならパス
+      c.io.led.out.expect(90.U) // gpレジスタが ならパス
     }
   }
 

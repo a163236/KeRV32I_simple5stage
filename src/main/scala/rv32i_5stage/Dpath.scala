@@ -98,8 +98,8 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
   // *** DEBUG ************************************************************************************
   io.led.out := regFile.io.reg_a0
-
   io.debug.pc := ifid_regs.io.out.pc
+
 
   // debugの信号線を増やさないとなぜか正しく表示されない。。。
   printf("pc_IFID=[%x] inst_IFID=[%x] || " +

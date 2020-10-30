@@ -59,7 +59,6 @@ class SyncMemBlackBoxIO extends Bundle{
 class SyncMem(filename:String="./testfolder/hexfile/rv32ui/temp_keita.hex") extends BlackBox(Map("INIT_HEX_FILE" -> filename)) with HasBlackBoxResource {
   val io = IO(new SyncMemBlackBoxIO)
   addResource("/SyncMem.v")
-
 }
 
 class SyncMemScala(filename:String) extends Module {
@@ -82,7 +81,6 @@ class SyncMemScala(filename:String) extends Module {
   syncmemblackbox.io.wdataD := wdata //io.datamport.req.wdataD
   syncmemblackbox.io.MaskD := mask
   //io.datamport.resp.rdata := syncmemblackbox.io.rdataD
-
 
   // 書き込みのとき用
   when(io.datamport.req.mask===MT_B){ // バイトのとき
@@ -113,12 +111,19 @@ class SyncMemScala(filename:String) extends Module {
   /*
   printf("mask=%b ", mask)
   printf("regaddr=%x ", reg_addrD)
-  printf("%x ", reg_mask)
+  printf("regmask=%b ", reg_mask)
   printf("wdata=%x ", wdata)
   printf("rdataD=%x ", rdataD)
   printf("tempans=%x ", tmpans)
-   */
-
+  */
+  /*
+  printf("wenD=%x ",syncmemblackbox.io.wenD);
+  printf("renD=%x ", syncmemblackbox.io.renD);
+  printf("mask=%b ",syncmemblackbox.io.MaskD);
+  printf("wdata=%x ",syncmemblackbox.io.wdataD);
+  printf("addrD=%x ", syncmemblackbox.io.addrD)
+  printf("rdata=%x ", syncmemblackbox.io.rdataD)
+  */
   switch(reg_mask){
     is(MT_B){
       tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
@@ -169,5 +174,4 @@ class SyncMemScala(filename:String) extends Module {
       ))
     }
   }
-
 }

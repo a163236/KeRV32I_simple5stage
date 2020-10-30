@@ -24,7 +24,7 @@ module SyncMem
 
     integer i;
 
-    reg [31:0] mem[0:1024*32];
+    reg [31:0] mem[0:1023];
 
     // メモリの初期化
     initial begin
