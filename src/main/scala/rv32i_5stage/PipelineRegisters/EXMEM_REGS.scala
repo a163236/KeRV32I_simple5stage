@@ -35,6 +35,7 @@ class EXMEM_REGS extends Module{
 
   // 入力
 
+  // レジスタ遷移
   when(io.pipe_stallorflush===PIPE_FLUSH){
     pc := 0.U
     alu := 0.U

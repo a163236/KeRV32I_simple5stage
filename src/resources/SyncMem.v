@@ -1,5 +1,6 @@
 module SyncMem
-    #(parameter INIT_HEX_FILE = "")
+    #(parameter MEM_SIZE=1024
+    ,parameter INIT_HEX_FILE = "")
     (
     // クロック
     input clk,
@@ -24,7 +25,7 @@ module SyncMem
 
     integer i;
 
-    reg [31:0] mem[0:1023];
+    reg [31:0] mem[0:MEM_SIZE-1];
 
     // メモリの初期化
     initial begin

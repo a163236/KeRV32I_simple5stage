@@ -1,9 +1,8 @@
-package common
+package rv32i_5stage
 
 import chisel3._
 import chisel3.util.experimental.loadMemoryFromFile
-import firrtl.annotations.MemoryLoadFileType
-
+// 使用してない。ロードメモリでメモリを読み込んでもverilogソースには反映されていない。。？
 class Bram extends Module {
   val io = IO(new Bundle() {
     val addr = Input(UInt(32.W))

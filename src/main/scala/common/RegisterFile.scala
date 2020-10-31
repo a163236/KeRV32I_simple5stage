@@ -43,5 +43,6 @@ class RegisterFile extends Module{
 
   // デバッグ
   io.reg_a0 := regfile(10)
-  printf("rega5=%x ",regfile(15))
+  //printf("rega4=[%x] ", regfile(14))
+  //printf("rega5=[%x]  ",regfile(15))
 }

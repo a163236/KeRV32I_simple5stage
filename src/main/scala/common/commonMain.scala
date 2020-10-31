@@ -1,5 +1,7 @@
 package common
 
+import rv32i_5stage.Bram
+
 object commonMain extends App{
 
   //val dir = new File(args(0)) // args(0)のディレクトリのオブジェクトを作って

@@ -56,7 +56,10 @@ class SyncMemBlackBoxIO extends Bundle{
   val MaskD = Input(UInt(4.W))
 }
 
-class SyncMem(filename:String="./testfolder/hexfile/rv32ui/temp_keita.hex") extends BlackBox(Map("INIT_HEX_FILE" -> filename)) with HasBlackBoxResource {
+class SyncMem(filename:String="./testfolder/hexfile/rv32ui/temp_keita.hex") extends BlackBox(Map(
+  "MEM_SIZE"->1024*100,
+  "INIT_HEX_FILE" -> filename)  // verilog パラメータ
+) with HasBlackBoxResource {
   val io = IO(new SyncMemBlackBoxIO)
   addResource("/SyncMem.v")
 }
@@ -66,7 +69,7 @@ class SyncMemScala(filename:String) extends Module {
     val instmport = Flipped(new InstMemPortIO())
     val datamport = Flipped(new DataMemPortIO())
   })
-  val mask = WireInit(0.U(4.W))
+  val mask = WireInit(0.U(4.W)) // 書き込みマスク
   val wdata = WireInit(0.U(32.W)) // 書き込むデータ
 
   val syncmemblackbox = Module(new SyncMem(filename))
@@ -104,26 +107,21 @@ class SyncMemScala(filename:String) extends Module {
   val tmpans = WireInit(0.U(32.W))
   // 状態遷移　１クロック遅いので
   val reg_addrD = Reg(UInt(2.W)); reg_addrD:=io.datamport.req.addrD(1,0)
-  val reg_mask = Reg(UInt(4.W));  reg_mask:=io.datamport.req.mask
+  val reg_mask = Reg(UInt(MT_X.getWidth.W));  reg_mask:=io.datamport.req.mask
 
   io.instmport.resp.rdata := syncmemblackbox.io.rdataI
   io.datamport.resp.rdata := tmpans
-  /*
-  printf("mask=%b ", mask)
-  printf("regaddr=%x ", reg_addrD)
-  printf("regmask=%b ", reg_mask)
-  printf("wdata=%x ", wdata)
-  printf("rdataD=%x ", rdataD)
-  printf("tempans=%x ", tmpans)
-  */
-  /*
+
+  printf("syncrdata=[%x] ", tmpans)
+
   printf("wenD=%x ",syncmemblackbox.io.wenD);
   printf("renD=%x ", syncmemblackbox.io.renD);
   printf("mask=%b ",syncmemblackbox.io.MaskD);
+  printf("regmask=%b ",reg_mask);
   printf("wdata=%x ",syncmemblackbox.io.wdataD);
   printf("addrD=%x ", syncmemblackbox.io.addrD)
   printf("rdata=%x ", syncmemblackbox.io.rdataD)
-  */
+
   switch(reg_mask){
     is(MT_B){
       tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(
