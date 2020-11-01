@@ -15,7 +15,7 @@ class IFID_REGS_IO extends Bundle{
   val in = Flipped(new IFID_REGS_Output)
   val out = new IFID_REGS_Output
   val pipe_flush = Input(Bool())
-  val pipe_stalllorflush = Input(UInt(PIPE_X.getWidth.W))
+  val pipe_stalll = Input(Bool())
 }
 
 class IFID_REGS extends Module{
@@ -28,14 +28,13 @@ class IFID_REGS extends Module{
   when(io.pipe_flush){
     pc := BUBBLE
     inst := BUBBLE
-  }.elsewhen(io.pipe_stalllorflush===PIPE_STALL){
+  }.elsewhen(io.pipe_stalll){
     pc := pc
     inst := inst
   }.otherwise{
     pc := io.in.pc
     inst := io.in.inst
   }
-
 
   //出力
   io.out.pc := pc

@@ -23,7 +23,6 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // まずは使うModule宣言
   val regFile = Module(new RegisterFile())
   val ForwardingUnit = Module(new ForwardingUnit())
-  val HazardUnit = Module(new HazardUnit())
 
 
   //==============================================
@@ -40,6 +39,7 @@ class Dpath(implicit val conf:Configurations) extends Module{
   val exmem_regs = Module(new EXMEM_REGS)
   val memwb_regs = Module(new MEMWB_REGS)
 
+  // パイプライン 数珠つなぎにつないでるだけ
   ifid_regs.io.in := if_stage.io.out
   id_stage.io.in := ifid_regs.io.out
   idex_regs.io.in := id_stage.io.out
@@ -50,30 +50,25 @@ class Dpath(implicit val conf:Configurations) extends Module{
   wb_stage.io.in := memwb_regs.io.out
 
   // ジャンプ命令 exeステージ-> IFステージへの信号
-  if_stage.io.exetoifjumpsignals := exe_stage.io.exetoifjumpsignals
+  if_stage.io.exetoifjumpsignals <> exe_stage.io.exetoifjumpsignals
   // ジャンプ命令に付随するフラッシュ
-  ifid_regs.io.pipe_flush := exe_stage.io.pipe_flush
-  idex_regs.io.pipe_flush := exe_stage.io.pipe_flush
+  ifid_regs.io.pipe_flush := exe_stage.io.exetoifjumpsignals.branchbool
+  id_stage.io.flush := (exe_stage.io.exetoifjumpsignals.branchbool || mem_stage.io.memtoifjumpsignals.eret)
+
 
   // ハザードユニットへの入力
-  HazardUnit.io.exe.rs1_addr := exe_stage.io.hazard.rs1_addr
-  HazardUnit.io.exe.rs2_addr := exe_stage.io.hazard.rs2_addr
-  HazardUnit.io.mem.mem_en := mem_stage.io.hazard.mem_en
-  HazardUnit.io.mem.mem_addr := mem_stage.io.hazard.mem_addr
-  HazardUnit.io.mem.mem_wr := mem_stage.io.hazard.mem_wr
-  HazardUnit.io.mem.mem_mask := mem_stage.io.hazard.mem_mask
-  // ハザードユニットから
-  if_stage.io.stallorFlush := HazardUnit.io.stallorflush.if_stage // pcのストール？
-  ifid_regs.io.pipe_stalllorflush := HazardUnit.io.stallorflush.ifid
-  idex_regs.io.pipe_stallorflush := HazardUnit.io.stallorflush.idexe
-  exmem_regs.io.pipe_stallorflush := HazardUnit.io.stallorflush.exemem
+  id_stage.io.hazard_IDEX_IO.rd_addr := idex_regs.io.out.rd_addr
+  id_stage.io.hazard_IDEX_IO.mem_en := idex_regs.io.out.ctrlMEM.dmem_en
+  id_stage.io.hazard_IDEX_IO.mem_wr := idex_regs.io.out.ctrlMEM.dmem_wr
 
+  // ハザードユニットからの出力 ストール!
+  if_stage.io.stall := id_stage.io.hazard_Stall // pcのストール？
+  ifid_regs.io.pipe_stalll := id_stage.io.hazard_Stall
   // csrからの例外の有無とpc
   if_stage.io.memtoifjumpsignals := mem_stage.io.memtoifjumpsignals
 
   // 命令メモリ接続
   io.imem <> if_stage.io.imem
-  //io.imem <> ifid_regs.io.imem
 
   // データメモリ接続
   io.dmem <> mem_stage.io.dmem
@@ -102,17 +97,19 @@ class Dpath(implicit val conf:Configurations) extends Module{
 
 
   // debugの信号線を増やさないとなぜか正しく表示されない。。。
-  printf("pc_IFID=[%x] inst_IFID=[%x] || " +
+  printf("PC=[%x] ||" +
+    "pc_IFID=[%x] inst_IFID=[%x] || " +
     "pc_IDEX=[%x] rs1_IDEX=[%x] rs2_IDEX=[%x] inst_IDEX=[%x]  || " +
     "pc_EXMEM=[%x] alu_out=[%x] rs2_EXMEM=[%x] inst_EXMEM=[%x]  || " +
-    "MEMWB_out=[%x] inst_MEMWB=[%x]  || " +
+    "pc_MEMWB=[%x] MEMWB_out=[%x] inst_MEMWB=[%x]  || " +
     "refwen=[%x] regwaddr=[%x] regwdata=[%x] reg_a0=[%x] " +
     " || "
 
+    , if_stage.io.out.pc
     , ifid_regs.io.out.pc, ifid_regs.io.out.inst
     , idex_regs.io.out.pc, idex_regs.io.out.rs1, idex_regs.io.out.rs2, idex_regs.io.out.inst
     , exmem_regs.io.out.pc, exmem_regs.io.out.alu, exmem_regs.io.out.rs2, exmem_regs.io.out.inst
-    , memwb_regs.io.out.alu, memwb_regs.io.out.inst
+    , memwb_regs.io.out.pc, memwb_regs.io.out.alu, memwb_regs.io.out.inst
     , regFile.io.wen, regFile.io.waddr, regFile.io.wdata, regFile.io.reg_a0
     ,
   )

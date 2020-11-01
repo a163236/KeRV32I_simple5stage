@@ -23,7 +23,6 @@ class MEM_STAGE_IO extends Bundle{
   val dmem = new DataMemPortIO
   val memtoifjumpsignals = new MEMtoIFjumpsignalsIO
   val fwfromMEM = Flipped(new FWMEM_IO)
-  val hazard = Flipped(new Hazard_MEM_StageIO)
 
 }
 
@@ -47,6 +46,7 @@ class MEM_STAGE extends Module{
   io.dmem.req.enD := io.in.ctrlMEM.dmem_en
 
   // 出力
+  io.out.pc := io.in.pc
   io.out.pc_plus4 := io.in.pc + 4.U
   io.out.alu := io.in.alu
   io.out.rdataD := io.dmem.resp.rdata
@@ -59,11 +59,6 @@ class MEM_STAGE extends Module{
   io.fwfromMEM.rd_addr := io.in.inst(RD_MSB, RD_LSB)
   io.fwfromMEM.rfwen := io.in.ctrlWB.rf_wen
 
-  // ハザード
-  io.hazard.mem_addr := io.in.inst(RD_MSB, RD_LSB)
-  io.hazard.mem_wr := io.in.ctrlMEM.dmem_wr
-  io.hazard.mem_en := io.in.ctrlMEM.dmem_en
-  io.hazard.mem_mask := io.in.ctrlMEM.dmem_mask
 
   // 例外のIFへの出力
   io.memtoifjumpsignals.outPC := csrFile.io.outPC

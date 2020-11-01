@@ -4,48 +4,31 @@ import chisel3._
 import chisel3.util._
 import common.CommonPackage._
 
-class Hazard_EXE_StageIO extends Bundle{
+class Hazard_IFID_IO extends Bundle{
   val rs1_addr = Input(UInt(32.W))
   val rs2_addr = Input(UInt(32.W))
 }
 
-class Hazard_MEM_StageIO extends Bundle{
-  val mem_wr = Input(UInt(M_XRD.getWidth.W))
-  val mem_en = Input(Bool())
-  val mem_mask = Input(UInt(MT_X.getWidth.W))
-  val mem_addr = Input(UInt(32.W))
-}
-
-class StallorFlushIO extends Bundle{
-  val if_stage = Output(UInt(PIPE_X.getWidth.W))
-  val ifid = Output(UInt(PIPE_X.getWidth.W))
-  val idexe = Output(UInt(PIPE_X.getWidth.W))
-  val exemem = Output(UInt(PIPE_X.getWidth.W))
-
+class Hazard_IDEX_IO extends Bundle{
+  val rd_addr = Input(UInt(32.W))
+  val mem_en = Input(UInt(MEN_X.getWidth.W))
+  val mem_wr = Input(UInt(M_XWR.getWidth.W))
 }
 
 class HazardUnitIO extends Bundle{
-  val mem = new Hazard_MEM_StageIO
-  val exe = new Hazard_EXE_StageIO
-  val stallorflush =new StallorFlushIO
+  val ifid = new Hazard_IFID_IO
+  val idex = new Hazard_IDEX_IO
+  val stall =Output(Bool())
 }
 
 class HazardUnit extends Module{
   val io = IO(new HazardUnitIO)
 
   // ロードのあとのストール
-  when(io.mem.mem_wr===M_XRD && io.mem.mem_en===MEN_1 &&
-  (io.mem.mem_addr === io.exe.rs1_addr || io.mem.mem_addr === io.exe.rs2_addr)) { // 読み込み＆アドレスが等しいとき
-    // exememをフラッシュ 他はストール
-    io.stallorflush.if_stage := PIPE_STALL
-    io.stallorflush.ifid := PIPE_STALL
-    io.stallorflush.idexe := PIPE_STALL
-    io.stallorflush.exemem := PIPE_FLUSH  // ?
-    //printf("Hazard-stall! ")
+  when(io.idex.mem_wr===M_XRD && io.idex.mem_en===MEN_1 &&
+  (io.idex.rd_addr === io.ifid.rs1_addr || io.idex.rd_addr === io.ifid.rs2_addr)) { // 読み込み＆アドレスが等しいとき
+    io.stall := true.B
   }.otherwise{
-    io.stallorflush.if_stage := PIPE_X
-    io.stallorflush.ifid := PIPE_X
-    io.stallorflush.idexe := PIPE_X
-    io.stallorflush.exemem := PIPE_X
+    io.stall := PIPE_X
   }
 }

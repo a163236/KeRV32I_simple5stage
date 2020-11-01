@@ -111,7 +111,7 @@ class SyncMemScala(filename:String) extends Module {
 
   io.instmport.resp.rdata := syncmemblackbox.io.rdataI
   io.datamport.resp.rdata := tmpans
-
+  /*
   printf("syncrdata=[%x] ", tmpans)
 
   printf("wenD=%x ",syncmemblackbox.io.wenD);
@@ -121,7 +121,7 @@ class SyncMemScala(filename:String) extends Module {
   printf("wdata=%x ",syncmemblackbox.io.wdataD);
   printf("addrD=%x ", syncmemblackbox.io.addrD)
   printf("rdata=%x ", syncmemblackbox.io.rdataD)
-
+  */
   switch(reg_mask){
     is(MT_B){
       tmpans := MuxLookup(reg_addrD,rdataD(7,0),Array(

@@ -6,6 +6,7 @@ import common.CtrlWB
 import rv32i_5stage._
 
 class MEMWB_REGS_Output extends Bundle{
+  val pc = Output(UInt(32.W)) // デバッグ
   val pc_plus4 = Output(UInt(32.W))
   val alu = Output(UInt(32.W))
   val rdataD = Output(UInt(32.W))   // メモリからの読み出し 1クロック遅れ
@@ -24,6 +25,7 @@ class MEMWB_REGS extends Module{
   val io = IO(new MEMWB_REGS_IO)
 
   val pc = Reg(UInt(32.W))
+  val pc_plus4 = Reg(UInt(32.W))
   val alu = Reg(UInt(32.W))
   val rdataD = Reg(UInt(32.W))
   val wdataCSR = Reg(UInt(32.W))
@@ -32,7 +34,8 @@ class MEMWB_REGS extends Module{
   val inst = Reg(UInt(32.W))
 
   // 入力
-  pc := io.in.pc_plus4
+  pc := io.in.pc
+  pc_plus4 := io.in.pc_plus4
   alu := io.in.alu
   wdataCSR := io.in.wdataCSR
   csr_addr := io.in.csr_addr
@@ -41,7 +44,8 @@ class MEMWB_REGS extends Module{
   inst := io.in.inst
 
   // 出力
-  io.out.pc_plus4 := pc
+  io.out.pc := pc
+  io.out.pc_plus4 := pc_plus4
   io.out.alu := alu
   io.out.rdataD := io.in.rdataD // 1クロック遅れなのでZ
   io.out.wdataCSR := wdataCSR

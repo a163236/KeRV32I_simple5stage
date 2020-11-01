@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import common._
 import common.CommonPackage._
-import rv32i_5stage.{FWEXE_IO, Hazard_EXE_StageIO}
+import rv32i_5stage.{FWEXE_IO, Hazard_IDEX_IO}
 import rv32i_5stage.PipelineRegisters._
 
 class EXEtoIFjumpsignalsIO extends Bundle{
@@ -16,9 +16,8 @@ class EXE_STAGE_IO extends Bundle{
   val in = Flipped(new IDEX_REGS_Output)
   val out = new EXMEM_REGS_Output
   val exetoifjumpsignals = new EXEtoIFjumpsignalsIO
-  val pipe_flush = Output(Bool()) // フラッシュ
+  val flush_in = Output(Bool()) // フラッシュ
   val fwUnit = Flipped(new FWEXE_IO)  // フォワーディング
-  val hazard = Flipped(new Hazard_EXE_StageIO) // ハザード
 }
 
 
@@ -35,9 +34,6 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
   val rs2_addr = io.in.inst(RS2_MSB, RS2_LSB)
   io.fwUnit.rs1_addr := rs1_addr
   io.fwUnit.rs2_addr := rs2_addr
-  // ハザードのアドレス
-  io.hazard.rs1_addr := rs1_addr
-  io.hazard.rs2_addr := rs2_addr
 
   val rs1 = Wire(UInt(32.W))
   val rs2 = Wire(UInt(32.W))
@@ -74,7 +70,7 @@ class EXE_STAGE(implicit val conf: Configurations) extends Module{
     BR_LTU-> Mux( BranchComp.io.branComOut.br_ltu,true.B, false.B),
     BR_J  -> true.B,
     BR_JR -> true.B))
-  io.pipe_flush := io.exetoifjumpsignals.branchbool // 分岐するならフラッシュするから
+
   io.out.pc := io.in.pc
   io.out.alu := ALU.io.out
   io.out.rs2 := rs2
