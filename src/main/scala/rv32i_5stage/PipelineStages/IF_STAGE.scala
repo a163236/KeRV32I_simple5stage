@@ -15,6 +15,7 @@ class IF_STAGE_IO extends Bundle{
   val imem = new InstMemPortIO
   val exetoifjumpsignals = Flipped(new EXEtoIFjumpsignalsIO)
   val memtoifjumpsignals = Flipped(new MEMtoIFjumpsignalsIO)
+  val idtoIFjumpsignalsIO = Flipped(new IDtoIFjumpsignalsIO)
   val stall = Input(Bool())
 }
 
@@ -28,12 +29,20 @@ class IF_STAGE extends Module{
   // 動作
   io.imem.req.renI := true.B
 
+  // 出力
+  io.out.pc := pc_reg
+  io.out.inst := io.imem.resp.rdata
 
-  when(io.memtoifjumpsignals.eret){ // 例外
+  when(io.memtoifjumpsignals.eret){                 // 例外発生時
     next_pc := io.memtoifjumpsignals.outPC
-  }.elsewhen(io.exetoifjumpsignals.branchbool){ // 分岐命令のとき
+    io.out.pc := 0.U; io.out.inst := 0.U  // フラッシュ
+  }.elsewhen(io.exetoifjumpsignals.branchbool) {    // 分岐命令のとき
     next_pc := io.exetoifjumpsignals.aluout
-  }.elsewhen(io.stall){ // stall でそのまま
+    io.out.pc := 0.U; io.out.inst := 0.U  // フラッシュ
+  }.elsewhen(io.idtoIFjumpsignalsIO.branchbool){    // 絶対ジャンプ命令のとき
+    next_pc := io.idtoIFjumpsignalsIO.pcPlusImm
+    io.out.pc := 0.U; io.out.inst := 0.U  // フラッシュ
+  }.elsewhen(io.stall){ // stall でそのまま          // ストールのとき
     next_pc := pc_reg
   }.otherwise{
     next_pc := pc_reg + 4.U
@@ -46,8 +55,5 @@ class IF_STAGE extends Module{
   }
   pc_reg := next_pc
 
-  // 出力
-  io.out.pc := pc_reg
-  io.out.inst := io.imem.resp.rdata
 
 }

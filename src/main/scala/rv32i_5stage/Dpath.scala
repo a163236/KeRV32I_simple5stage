@@ -49,12 +49,14 @@ class Dpath(implicit val conf:Configurations) extends Module{
   memwb_regs.io.in := mem_stage.io.out
   wb_stage.io.in := memwb_regs.io.out
 
-  // ジャンプ命令 exeステージ-> IFステージへの信号
+  // ジャンプ命令   -> IFステージへの信号
+  if_stage.io.idtoIFjumpsignalsIO <> id_stage.io.idtoIFjumpsignalsIO
   if_stage.io.exetoifjumpsignals <> exe_stage.io.exetoifjumpsignals
+  if_stage.io.memtoifjumpsignals <> mem_stage.io.memtoifjumpsignals
   // ジャンプ命令に付随するフラッシュ
   ifid_regs.io.pipe_flush := exe_stage.io.exetoifjumpsignals.branchbool
   id_stage.io.flush := (exe_stage.io.exetoifjumpsignals.branchbool || mem_stage.io.memtoifjumpsignals.eret)
-
+  exe_stage.io.flush_in := mem_stage.io.memtoifjumpsignals.eret
 
   // ハザードユニットへの入力
   id_stage.io.hazard_IDEX_IO.rd_addr := idex_regs.io.out.rd_addr
@@ -64,8 +66,6 @@ class Dpath(implicit val conf:Configurations) extends Module{
   // ハザードユニットからの出力 ストール!
   if_stage.io.stall := id_stage.io.hazard_Stall // pcのストール？
   ifid_regs.io.pipe_stalll := id_stage.io.hazard_Stall
-  // csrからの例外の有無とpc
-  if_stage.io.memtoifjumpsignals := mem_stage.io.memtoifjumpsignals
 
   // 命令メモリ接続
   io.imem <> if_stage.io.imem

@@ -17,7 +17,6 @@ class BranchCompIO(implicit val conf: Configurations) extends Bundle{
 class BranchComp(implicit val conf: Configurations) extends Module{
   val io = IO(new BranchCompIO())
 
-  printf("%x %x", io.rs1_data, io.rs2_data)
   io.branComOut.br_eq  := (io.rs1_data === io.rs2_data)
   io.branComOut.br_lt  := (io.rs1_data.asSInt() < io.rs2_data.asSInt())
   io.branComOut.br_ltu := (io.rs1_data.asUInt() < io.rs2_data.asUInt())

@@ -39,10 +39,9 @@ class ForwardingUnit extends Module{
   val io = IO(new ForwardingUnitIO)
 
   // fw1_selの選択
+  //printf("%x %x ", io.fwEXE.rs1_addr, io.fwfromMEM.rd_addr)
   when((io.fwfromMEM.rd_addr === io.fwEXE.rs1_addr) && io.fwfromMEM.rd_addr=/=0.U && io.fwfromMEM.rfwen===REN_1){  // MEMからが優先
-    io.fwEXE.rs1_sel := FW1_MEM // sel=1
-    //printf("rdaddr=%x ",io.fwfromMEM.rd_addr)
-    //printf("rs1addr=%x ",io.fwEXE.rs1_addr)
+    io.fwEXE.rs1_sel := FW1_MEM
   }.elsewhen((io.fwfromWB.rd_addr === io.fwEXE.rs1_addr) && io.fwfromWB.rd_addr=/=0.U && io.fwfromWB.rfwen===REN_1){
     io.fwEXE.rs1_sel := FW1_WB
   }.otherwise{

@@ -4,10 +4,17 @@ import CommonPackage._
 import chisel3._
 import chisel3.util._
 
+class ImmGenOut extends Bundle{
+  val j_type_imm = Output(UInt(32.W))
+  val b_type_imm = Output(UInt(32.W))
+  val s_type_imm = Output(UInt(32.W))
+  val u_type_imm = Output(UInt(32.W))
+  val i_type_imm = Output(UInt(32.W))
+}
+
 class ImmGenIO(implicit val conf:Configurations) extends Bundle{
   val inst    = Input(UInt(conf.xlen.W))
-  val imm_sel  = Input(UInt(IMM_X.getWidth.W))
-  val out = Output(UInt(conf.xlen.W))
+  val out = new ImmGenOut()
 }
 
 class ImmGen(implicit val conf:Configurations) extends Module{
@@ -20,13 +27,11 @@ class ImmGen(implicit val conf:Configurations) extends Module{
   val imm_u = Cat(io.inst(31, 12), Fill(12, 0.U))
   val imm_j = Cat(Fill(12,io.inst(31)),io.inst(19,12), io.inst(20), io.inst(30,21), 0.U(1.W))
 
-  io.out := MuxLookup(io.imm_sel, 0.U(32.W), Array(
-    IMM_X -> 0.U(conf.xlen.W),
-    IMM_I -> imm_i,
-    IMM_S -> imm_s,
-    IMM_B -> imm_b,
-    IMM_U -> imm_u,
-    IMM_J -> imm_j,
-  ))
+  io.out.i_type_imm := imm_i
+  io.out.s_type_imm := imm_s
+  io.out.b_type_imm := imm_b
+  io.out.u_type_imm := imm_u
+  io.out.j_type_imm := imm_j
+
 
 }
