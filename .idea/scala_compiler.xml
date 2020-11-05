@@ -9,6 +9,9 @@
       <parameters>
         <parameter value="-Xsource:2.11" />
       </parameters>
+      <plugins>
+        <plugin path="$USER_HOME$/.cache/coursier/v1/https/repo1.maven.org/maven2/edu/berkeley/cs/chisel3-plugin_2.12.12/3.4.0/chisel3-plugin_2.12.12-3.4.0.jar" />
+      </plugins>
     </profile>
   </component>
 </project>
