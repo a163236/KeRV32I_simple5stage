@@ -2,9 +2,15 @@ name := "KeRV32I_simple5stage"
 
 version := "0.1"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.8"
 
-scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-language:reflectiveCalls", "-Xsource:2.11")
+scalacOptions ++= Seq(
+  "-language:reflectiveCalls",
+  "-deprecation",
+  "-feature",
+  "-Xcheckinit",
+  "-P:chiselplugin:genBundleElements"
+)
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),

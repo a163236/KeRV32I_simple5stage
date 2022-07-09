@@ -5,9 +5,6 @@ import chiseltest._
 import common._
 import CommonPackage._
 import org.scalatest._
-import chiseltest.experimental.TestOptionBuilder._
-import chiseltest.internal.VerilatorBackendAnnotation
-import firrtl.stage.RunFirrtlTransformAnnotation
 import ゴミ箱.{InstMemory, SyncReadMEM}
 
 class test() extends FlatSpec with ChiselScalatestTester with Matchers {

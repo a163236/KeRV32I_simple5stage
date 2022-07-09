@@ -3,8 +3,7 @@ package rv32i_5stage
 import chisel3._
 import chiseltest._
 import org.scalatest._
-import chiseltest.experimental.TestOptionBuilder._
-import chiseltest.internal.{VerilatorBackendAnnotation, WriteVcdAnnotation}
+import chiseltest.simulator.{VerilatorBackendAnnotation, WriteVcdAnnotation}
 import common._
 import common.CommonPackage._
 
